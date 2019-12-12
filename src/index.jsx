@@ -18,41 +18,41 @@ setUseTheme(() => {
   return useContext(ThemeContext);
 });
 
-// const files = {
-//   "/index.js": {
-//     code: `import React from "react";
-// import ReactDOM from "react-dom";
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <h1>Hello CodeSandbox</h1>
-//       <h2>Start editing to see some magic happen!</h2>
-//     </div>
-//   );
-// }
-
-// const rootElement = document.createElement("root");
-// document.body.appendChild(rootElement);
-// ReactDOM.render(<App />, rootElement);
-//     `
-//   }
-// };
-
-// const dependencies = {
-//   react: "latest",
-//   "react-dom": "latest"
-// };
-
 const files = {
   "/index.js": {
-    code: "document.body.innerHTML = `<div>Hello world</div>`"
+    code: `import React from "react";
+import ReactDOM from "react-dom";
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
+    </div>
+  );
+}
+
+const rootElement = document.createElement("root");
+document.body.appendChild(rootElement);
+ReactDOM.render(<App />, rootElement);
+    `
   }
 };
 
 const dependencies = {
-  uuid: "latest"
+  react: "latest",
+  "react-dom": "latest"
 };
+
+// const files = {
+//   "/index.js": {
+//     code: "document.body.innerHTML = `<div>Hello world</div>`"
+//   }
+// };
+
+// const dependencies = {
+//   uuid: "latest"
+// };
 
 const editorWillMount = monaco => {
   monaco.languages.reactscript.typescriptDefaults.setCompilerOptions({
