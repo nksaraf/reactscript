@@ -1,3 +1,11 @@
+diff --git a/node_modules/goober/dist/goober.module.js b/node_modules/goober/dist/goober.module.js
+new file mode 100644
+index 0000000..c5a738c
+--- /dev/null
++++ b/node_modules/goober/dist/goober.module.js
+@@ -0,0 +1 @@
++export * from '../src';
+\ No newline at end of file
 diff --git a/node_modules/goober/src/index.js b/node_modules/goober/src/index.js
 index d0d707a..a13e0c5 100644
 --- a/node_modules/goober/src/index.js

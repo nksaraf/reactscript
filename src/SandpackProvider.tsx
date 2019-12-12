@@ -1,8 +1,8 @@
 import { createContext } from "preact";
 import { h, Component } from "preact";
+import { memo } from "preact/compat";
 import { Manager, generatePackageJSON } from "smooshpack";
 import { listen } from "codesandbox-api";
-
 import {
   IFiles,
   IManagerState,
@@ -10,7 +10,42 @@ import {
   IModuleError,
   ManagerStatus
 } from "./types";
-import { useState, useRef, useEffect, useContext } from "preact/hooks";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback
+} from "preact/hooks";
+
+export function useCallbackRef<T>(
+  initialValue: T | null,
+  callback: (newValue: T | null, lastValue: T | null) => void
+): any {
+  const [ref] = useState(() => ({
+    // value
+    value: initialValue,
+    // last callback
+    callback,
+    // "memoized" public interface
+    facade: {
+      get current() {
+        return ref.value;
+      },
+      set current(value) {
+        const last = ref.value;
+        if (last !== value) {
+          ref.value = value;
+          ref.callback(value, last);
+        }
+      }
+    }
+  }));
+  // update callback
+  ref.callback = callback;
+
+  return ref.facade;
+}
 
 export interface State {
   files: IFiles;
@@ -90,38 +125,362 @@ function createMissingPackageJSON(
   return newFiles;
 }
 
-// export const SandpackProvider = ({ files, dependencies,entry, children, bundlerURL, initialPath}: Props) => {
-//   const [allFiles, setAllFiles]  = useState(createMissingPackageJSON(
+const SandpackContext = createContext<ISandpackContext>({} as any);
+
+// export const SandpackProvider = memo(
+//   ({
+//     fileResolver,
+//     skipEval = false,
+//     children,
+//     className,
+//     style,
+//     bundlerURL,
+//     initialPath,
 //     files,
 //     dependencies,
-//     entry
-//   ));
-//   const [browserPath, setBrowserPath] = useState(initialPath || "/");
-//   const [openedPath, setOpenedath] = useState(entry || "/index.js");
-//   const [iFrame, setIFrame] = useState(null);
-//   const [errors, setErrors] = useState([] as any);
-//   const [managerState, setManagerState]  = useState(undefined);
-//   const [status, setStatus]  = useState("initializing" as ManagerStatus);
+//     entry,
+//     onFileChange,
+//     showOpenInCodeSandbox,
+//     template
+//   }: Props) => {
+//     const [iFrame, setIFrame] = useState(null);
+//     const manager = useRef<Manager>();
+//     const [openedPath, setOpenedPath] = useState(entry || "/index.js");
+//     const [browserPath, setBrowserPath] = useState(initialPath || "/");
 
-//   const handleMessage = (m: any) => {
-//     console.log(m);
-//     if (m.type === "state") {
-//       setManagerState(m.state);
-//     } else if (m.type === "start") {
-//       setErrors([]);
-//     } else if (m.type === "status") {
-//       setStatus(m.status);
-//     } else if (m.type === "action" && m.action === "show-error") {
-//       const { title, path, message, line, column } = m;
-//       setErrors((e: any) => [...e, { title, path, message, line, column }]);
+//     const [_files, setFiles] = useState(
+//       createMissingPackageJSON(files, dependencies, entry)
+//     );
+//     const [managerState, setManagerState] = useState(undefined as any);
+//     const [errors, setErrors] = useState([] as any[]);
+//     const [status, setStatus] = useState("initializing" as ManagerStatus);
+
+//     const handleMessage = (m: any) => {
+//       console.log(m);
+//       if (m.type === "state") {
+//         setManagerState(m.state);
+//       } else if (m.type === "start") {
+//         setErrors([]);
+//       } else if (m.type === "status") {
+//         setStatus(m.status);
+//       } else if (m.type === "action" && m.action === "show-error") {
+//         const { title, path, message, line, column } = m;
+//         setErrors(errors => [
+//           ...errors,
+//           { title, path, message, line, column }
+//         ]);
+//       }
+//     };
+
+//     const getManagerTranspilerContext = (): Promise<{
+//       [transpiler: string]: Object;
+//     }> =>
+//       new Promise(resolve => {
+//         const listener = listen((message: any) => {
+//           if (message.type === "transpiler-context") {
+//             resolve(message.data);
+
+//             listener();
+//           }
+//         });
+
+//         if (manager.current) {
+//           manager.current.dispatch({ type: "get-transpiler-context" });
+//         }
+//       });
+
+//     const openFile = (path: string) => {
+//       setOpenedPath(path);
+//     };
+
+//     function updateFiles(files: IFiles) {
+//       setFiles(files);
+
+//       if (onFileChange) {
+//         onFileChange(files, getSandpackState());
+//       }
+//       if (manager.current) {
+//         manager.current.updatePreview({
+//           showOpenInCodeSandbox,
+//           files,
+//           template
+//         });
+//       }
 //     }
 
-//   useEffect(() => {
-//     return listen(handleMessage);
-//   }, [])
+//     const getSandpackState = (): ISandpackContext => {
+//       // const {
+//       //   iframe,
+//       //   files,
+//       //   browserPath,
+//       //   openedPath,
+//       //   managerState,
+//       //   errors,
+//       //   status
+//       // } = this.state;
 
-//   return <SandpackContext.Provider value={{} as any}>{children}</SandpackContext.Provider>
-// }
+//       return {
+//         files: _files,
+//         openedPath,
+//         browserPath,
+//         errors,
+//         managerState,
+//         managerStatus: status,
+//         openFile: openFile,
+//         getManagerTranspilerContext: getManagerTranspilerContext,
+//         browserFrame: iFrame,
+//         updateFiles: updateFiles,
+//         bundlerURL: manager.current ? manager.current.bundlerURL : undefined
+//       };
+//     };
+
+//     useEffect(() => {
+//       const listener = listen(handleMessage);
+//       return listener;
+//     }, []);
+
+//     useEffect(() => {
+//       const newFiles = createMissingPackageJSON(files, dependencies, entry);
+
+//       updateFiles(newFiles);
+//     }, [files, dependencies, entry, template]);
+
+//     useEffect(() => {
+//       if (manager.current) {
+//         manager.current.updateOptions(getOptions());
+//       }
+//     }, [skipEval]);
+
+//     const getOptions = () => ({
+//       bundlerURL,
+//       fileResolver,
+//       skipEval
+//     });
+
+//     const setupFrame = (el: HTMLIFrameElement) => {
+//       if (el) {
+//         console.log(el);
+//         manager.current = new Manager(
+//           el,
+//           {
+//             files: generatePackageJSON(files, dependencies, entry),
+//             template,
+//             showOpenInCodeSandbox
+//           },
+//           getOptions()
+//         );
+//         console.log(manager.current);
+
+//         setIFrame(el);
+//       }
+//     };
+
+//     // browserPath: props.initialPath || "/",
+//     // openedPath: props.entry || "/index.js",
+//     // iframe: null,
+//     // managerState: undefined,
+//     // errors: [],
+//     // status: "initializing"
+//     console.log("here");
+//     return (
+//       <SandpackContext.Provider value={getSandpackState()}>
+//         {/* <div style={style} className={`${className || ""} sandpack`}> */}
+//         {/* We create a hidden iframe, the bundler will live in this.
+//     We expose this iframe to the Consumer, so other components can show the full
+//     iframe for preview. An implementation can be found in `Preview` component. */}
+//         <iframe
+//           ref={setupFrame}
+//           title="sandpack-sandbox"
+//           style={{
+//             width: 0,
+//             height: 0,
+//             border: 0,
+//             outline: 0,
+//             position: "absolute",
+//             visibility: "hidden"
+//           }}
+//           sandbox="allow-forms allow-scripts allow-same-origin allow-modals allow-popups allow-presentation"
+//           src={bundlerURL}
+//         />
+//         {children}
+//         {/* </div> */}
+//       </SandpackContext.Provider>
+//     );
+//   }
+// );
+
+export const useSandpack = () => {
+  return useContext(SandpackContext);
+};
+
+export const SandpackProvider = memo(
+  ({
+    files,
+    dependencies,
+    entry,
+    children,
+    bundlerURL,
+    initialPath,
+    template,
+    showOpenInCodeSandbox,
+    fileResolver,
+    skipEval,
+    onFileChange
+  }: Props) => {
+    const [allFiles, setAllFiles] = useState(
+      createMissingPackageJSON(files, dependencies, entry)
+    );
+    const [browserPath, setBrowserPath] = useState(initialPath || "/");
+    const [openedPath, setOpenedPath] = useState(entry || "/index.js");
+    const [errors, setErrors] = useState([] as any);
+    const [managerState, setManagerState] = useState(undefined);
+    const [status, setStatus] = useState("initializing" as ManagerStatus);
+    const manager = useRef(null);
+
+    const handleMessage = (m: any) => {
+      console.log(m);
+      if (m.type === "state") {
+        setManagerState(m.state);
+      } else if (m.type === "start") {
+        setErrors([]);
+      } else if (m.type === "status") {
+        setStatus(m.status);
+      } else if (m.type === "action" && m.action === "show-error") {
+        const { title, path, message, line, column } = m;
+        setErrors((e: any) => [...e, { title, path, message, line, column }]);
+      }
+    };
+
+    const getOptions = () => ({
+      bundlerURL: bundlerURL,
+      fileResolver: fileResolver,
+      skipEval: skipEval
+    });
+
+    useEffect(() => {
+      return listen(handleMessage);
+    }, []);
+
+    const getManagerTranspilerContext = (): Promise<{
+      [transpiler: string]: Object;
+    }> =>
+      new Promise(resolve => {
+        const listener = listen((message: any) => {
+          if (message.type === "transpiler-context") {
+            resolve(message.data);
+            listener();
+          }
+        });
+
+        if (manager.current) {
+          manager.current.dispatch({ type: "get-transpiler-context" });
+        }
+      });
+
+    const openFile = (path: string) => {
+      setOpenedPath(path);
+    };
+
+    function updateFiles(files: IFiles) {
+      setAllFiles(files);
+
+      if (onFileChange) {
+        onFileChange(files, getSandpackState());
+      }
+      if (manager.current) {
+        manager.current.updatePreview({
+          showOpenInCodeSandbox,
+          files,
+          template
+        });
+      }
+    }
+
+    const onBundlerMount = useCallback(el => {
+      console.log("heree");
+      manager.current = new Manager(
+        el,
+        {
+          files: generatePackageJSON(files, dependencies, entry),
+          template,
+          showOpenInCodeSandbox
+        },
+        getOptions()
+      );
+    }, []);
+
+    const getSandpackState = (): ISandpackContext => {
+      // const {
+      //   iframe,
+      //   files,
+      //   browserPath,
+      //   openedPath,
+      //   managerState,
+      //   errors,
+      //   status
+      // } = this.state;
+
+      return {
+        files: allFiles,
+        openedPath,
+        browserPath,
+        errors,
+        managerState,
+        managerStatus: status,
+        openFile: openFile,
+        onBundlerMount: onBundlerMount,
+        getManagerTranspilerContext: getManagerTranspilerContext,
+        browserFrame: manager.current ? manager.current.iframe : null,
+        updateFiles: updateFiles,
+        bundlerURL: manager.current ? manager.current.bundlerURL : undefined
+      };
+    };
+
+    useEffect(() => {
+      const newFiles = createMissingPackageJSON(files, dependencies, entry);
+      updateFiles(newFiles);
+    }, [files, dependencies, entry, template]);
+
+    useEffect(() => {
+      if (manager.current) {
+        manager.current.updateOptions(getOptions());
+      }
+    }, [skipEval]);
+
+    return (
+      <SandpackContext.Provider value={getSandpackState()}>
+        {/* <Bundler onMount={onBundlerMount} bundlerURL={bundlerURL} /> */}
+        {children}
+      </SandpackContext.Provider>
+    );
+  }
+);
+
+export const Bundler = memo(
+  ({ onMount, bundlerURL }) => {
+    const ref = useCallbackRef(null, onMount);
+    console.log("bundler");
+
+    return (
+      <iframe
+        ref={ref}
+        title="sandpack-sandbox"
+        key={1}
+        style={{
+          width: 0,
+          height: 0,
+          border: 0,
+          outline: 0,
+          position: "absolute",
+          visibility: "hidden"
+        }}
+        sandbox="allow-forms allow-scripts allow-same-origin allow-modals allow-popups allow-presentation"
+        src={bundlerURL}
+      />
+    );
+  },
+  (prev, next) => prev.bundlerURL === next.bundlerURL
+);
 
 // export class SandpackProvider_ extends Component<Props, State> {
 //   static defaultProps = {
@@ -542,185 +901,3 @@ function createMissingPackageJSON(
 
 //   return newFiles;
 // }
-
-const SandpackContext = createContext<ISandpackContext>({} as any);
-
-// export const SandpackProvider = ({
-//   fileResolver,
-//   skipEval = false,
-//   children,
-//   className,
-//   style,
-//   bundlerURL,
-//   initialPath,
-//   files,
-//   dependencies,
-//   entry,
-//   onFileChange,
-//   showOpenInCodeSandbox,
-//   template
-// }: Props) => {
-//   const [iFrame, setIFrame] = useState(null);
-//   const manager = useRef<Manager>();
-//   const [openedPath, setOpenedPath] = useState(entry || "/index.js");
-//   const [browserPath, setBrowserPath] = useState(initialPath || "/");
-
-//   const [_files, setFiles] = useState(
-//     createMissingPackageJSON(files, dependencies, entry)
-//   );
-//   const [managerState, setManagerState] = useState(undefined as any);
-//   const [errors, setErrors] = useState([] as any[]);
-//   const [status, setStatus] = useState("initializing" as ManagerStatus);
-
-//   const handleMessage = (m: any) => {
-//     console.log(m);
-//     if (m.type === "state") {
-//       setManagerState(m.state);
-//     } else if (m.type === "start") {
-//       setErrors([]);
-//     } else if (m.type === "status") {
-//       setStatus(m.status);
-//     } else if (m.type === "action" && m.action === "show-error") {
-//       const { title, path, message, line, column } = m;
-//       setErrors(errors => [...errors, { title, path, message, line, column }]);
-//     }
-//   };
-
-//   const getManagerTranspilerContext = (): Promise<{
-//     [transpiler: string]: Object;
-//   }> =>
-//     new Promise(resolve => {
-//       const listener = listen((message: any) => {
-//         if (message.type === "transpiler-context") {
-//           resolve(message.data);
-
-//           listener();
-//         }
-//       });
-
-//       if (manager.current) {
-//         manager.current.dispatch({ type: "get-transpiler-context" });
-//       }
-//     });
-
-//   const openFile = (path: string) => {
-//     setOpenedPath(path);
-//   };
-
-//   function updateFiles(files: IFiles) {
-//     setFiles(files);
-
-//     if (onFileChange) {
-//       onFileChange(files, getSandpackState());
-//     }
-//     if (manager.current) {
-//       manager.current.updatePreview({
-//         showOpenInCodeSandbox,
-//         files,
-//         template
-//       });
-//     }
-//   }
-
-//   const getSandpackState = (): ISandpackContext => {
-//     // const {
-//     //   iframe,
-//     //   files,
-//     //   browserPath,
-//     //   openedPath,
-//     //   managerState,
-//     //   errors,
-//     //   status
-//     // } = this.state;
-
-//     return {
-//       files: _files,
-//       openedPath,
-//       browserPath,
-//       errors,
-//       managerState,
-//       managerStatus: status,
-//       openFile: openFile,
-//       getManagerTranspilerContext: getManagerTranspilerContext,
-//       browserFrame: iFrame,
-//       updateFiles: updateFiles,
-//       bundlerURL: manager.current ? manager.current.bundlerURL : undefined
-//     };
-//   };
-
-//   useEffect(() => {
-//     const listener = listen(handleMessage);
-//     return listener;
-//   }, []);
-
-//   useEffect(() => {
-//     const newFiles = createMissingPackageJSON(files, dependencies, entry);
-
-//     updateFiles(newFiles);
-//   }, [files, dependencies, entry, template]);
-
-//   useEffect(() => {
-//     if (manager.current) {
-//       manager.current.updateOptions(getOptions());
-//     }
-//   }, [skipEval]);
-
-//   const getOptions = () => ({
-//     bundlerURL,
-//     fileResolver,
-//     skipEval
-//   });
-
-//   const setupFrame = (el: HTMLIFrameElement) => {
-//     if (el) {
-//       console.log(el);
-//       manager.current = new Manager(
-//         el,
-//         {
-//           files: generatePackageJSON(files, dependencies, entry),
-//           template,
-//           showOpenInCodeSandbox
-//         },
-//         getOptions()
-//       );
-//       console.log(manager.current);
-
-//       setIFrame(el);
-//     }
-//   };
-
-//   // browserPath: props.initialPath || "/",
-//   // openedPath: props.entry || "/index.js",
-//   // iframe: null,
-//   // managerState: undefined,
-//   // errors: [],
-//   // status: "initializing"
-//   return (
-//     <SandpackContext.Provider value={getSandpackState()}>
-//       {/* <div style={style} className={`${className || ""} sandpack`}> */}
-//       {/* We create a hidden iframe, the bundler will live in this.
-//     We expose this iframe to the Consumer, so other components can show the full
-//     iframe for preview. An implementation can be found in `Preview` component. */}
-//       <iframe
-//         ref={setupFrame}
-//         title="sandpack-sandbox"
-//         style={{
-//           width: 0,
-//           height: 0,
-//           border: 0,
-//           outline: 0,
-//           position: "absolute",
-//           visibility: "hidden"
-//         }}
-//         sandbox="allow-forms allow-scripts allow-same-origin allow-modals allow-popups allow-presentation"
-//         src={bundlerURL}
-//       />
-//       {children}
-//       {/* </div> */}
-//     </SandpackContext.Provider>
-//   );
-// };
-
-export const useSandpack = () => {
-  return useContext(SandpackContext);
-};

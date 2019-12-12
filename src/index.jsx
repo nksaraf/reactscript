@@ -1,6 +1,6 @@
 // Must be the first import
-import { h, render, createContext } from "preact";
 import "preact/debug";
+import { h, render, createContext } from "preact";
 import { useContext, useState } from "preact/hooks";
 import { theme } from "./theme";
 import { setPragma, setUseTheme } from "goober";
@@ -46,7 +46,7 @@ setUseTheme(() => {
 
 const files = {
   "/index.js": {
-    code: "document.body.innerHTML = `<div>${require('uuid')}</div>`"
+    code: "document.body.innerHTML = `<div>Hello world</div>`"
   }
 };
 

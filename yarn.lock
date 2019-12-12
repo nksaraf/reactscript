@@ -4185,10 +4185,10 @@ preact-transition-group@^1.1.1:
   resolved "https://registry.yarnpkg.com/preact-transition-group/-/preact-transition-group-1.1.1.tgz#f0a49327ea515ece34ea2be864c4a7d29e5d6e10"
   integrity sha1-8KSTJ+pRXs406ivoZMSn0p5dbhA=
 
-preact@10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.0.0.tgz#c528f04ac6c792a04d8c98a5144d8b13e0cf2aed"
-  integrity sha512-v5geBMq8xlX7Ai8ed0QFXIs7/SQ+4lzdu3fpApRspZ6IiFDRHeEXQ3fqns0jDsXseHjYqgWlK1QxqdWF4QrdFw==
+preact@10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.1.0.tgz#e90771c3fec23926bbd32ff4e9e62e4d79845f8b"
+  integrity sha512-TKPqDMstuxDkZydQ05vrLHSxpo+tG2jtyQXxp5HEGhr17Qgo3KQnD5Dq4xzX0+YFQJCETy4pnyPqLA/sgtpp/w==
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -4297,6 +4297,11 @@ react-codemirror2@^4.0.1:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-4.3.0.tgz#e79aedca4da60d22402d2cd74f2885a3e5c009fd"
   integrity sha512-tC0n9CHgrQYc976pUlKOaVJYEHAAYTVMers04gNy6jbkFf4rbPlw72y7bbOAfkHHvu6COG5S629Fek30bvHe8w==
 
+"react-dom@npm:@reactesm/react-dom":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@reactesm/react-dom/-/react-dom-0.1.1.tgz#98874a0dc488843fe309857ca4e8761ad7b10c73"
+  integrity sha512-tZ2FyVbZiWCGRiPYASPkRk/HJRDwoVaKmuIWwHrxPtU1WL26aA3MR7RwvDqpQYkUWLztJrq3poPLx43IPL7JvQ==
+
 react-is@^16.8.1:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
@@ -4318,6 +4323,11 @@ react-smooshpack@^0.0.62:
     react-codemirror2 "^4.0.1"
     rollup-plugin-scss "^0.4.0"
     smooshpack "^0.0.62"
+
+"react@npm:@reactesm/react":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@reactesm/react/-/react-0.1.0.tgz#64658bc6c060711d0faef7c1d1f41c28b5666dba"
+  integrity sha512-/2b9179xiryQ176R4EhAkC9xK2qQsw0YCoYS1BKIvXsnhAaPFbGMNJRe4jlwaCTX3DN7/ZTzPBiDLwB5h6/0qg==
 
 read-pkg-up@^1.0.1:
   version "1.0.1"

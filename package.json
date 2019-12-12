@@ -5,9 +5,6 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run copy:src && npm run copy:modules && npm run babel",
-    "build:js:watch": "babel dist -d dist --ignore \"dist/web_modules/*.js\" --watch",
-    "build:ts": "rm -rf dist && tsc",
-    "build:ts:watch": "tsc -w",
     "clean": "rm -rf dist",
     "dev:build": "npm run copy:src && npm run babel",
     "watch": "npm run clean && mkdir dist && npm run copy:modules && npm run dev:build && chokidar \"src/**/*\" -c \"npm run dev:build\"",
@@ -31,6 +28,7 @@
       "styled-system",
       "preact",
       "preact/hooks",
+      "preact/compat",
       "preact/debug",
       "smooshpack",
       "codesandbox-api"
@@ -40,8 +38,10 @@
     "codesandbox-api": "^0.0.23",
     "codesandbox-import-utils": "^2.1.11",
     "goober": "nksaraf/goober#theme",
-    "preact": "10.0.0",
+    "preact": "10.1.0",
     "preact-compat": "^3.19.0",
+    "react": "npm:@reactesm/react",
+    "react-dom": "npm:@reactesm/react-dom",
     "smooshpack": "*",
     "styled-system": "*"
   },
