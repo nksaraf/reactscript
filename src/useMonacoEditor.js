@@ -3,7 +3,9 @@ import ReactTypes from "./@types/react";
 
 export function noop() {}
 
-const useMonacoEditorLoader = (handleLoad = () => {}) => {
+export const useMonacoEditorLoader = (handleLoad = () => {}) => {
+  const [monaco, setMonaco] = useState(null);
+  const [loaded, setLoaded] = useState(false);
   const onMonacoLoad = e => {
     var paths = {
       "vs/basic-languages": "../../node_modules/monaco-languages/release/dev",
@@ -27,7 +29,11 @@ const useMonacoEditorLoader = (handleLoad = () => {}) => {
           "vs/basic-languages/monaco.contribution",
           "vs/language/typescript/monaco.contribution"
         ],
-        handleLoad
+        () => {
+          handleLoad();
+          setMonaco(window.monaco);
+          setLoaded(true);
+        }
       );
     });
 
@@ -35,15 +41,6 @@ const useMonacoEditorLoader = (handleLoad = () => {}) => {
       e.target.removeEventListener("load", onMonacoLoad);
     }
   };
-
-  // const loadScript = path => {
-  //   const loaderScript = window.document.createElement("script");
-  //   loaderScript.type = "text/javascript";
-  //   // @note: Due to the way AMD is being used by Monaco, there is currently no graceful way to integrate Monaco into webpack (cf. https://github.com/Microsoft/monaco-editor/issues/18):
-  //   loaderScript.src = path;
-  //   loaderScript.addEventListener("load", this.didLoad);
-  //   window.document.body.appendChild(loaderScript);
-  // };
 
   const loadScript = (src, onLoad) => {
     const loaderScript = window.document.createElement("script");
@@ -65,45 +62,47 @@ const useMonacoEditorLoader = (handleLoad = () => {}) => {
       onMonacoLoad({});
     }
   }, []);
+
+  return monaco;
 };
 
-export const useMonacoEditor = ({ language, theme, onMount }) => {
-  const ref = useRef(null);
+// export const useMonacoEditor = ({ language, theme, onMount }) => {
+//   const ref = useRef(null);
 
-  const handleMount = () => {
-    monaco.languages.reactscript.typescriptDefaults.setCompilerOptions({
-      target: monaco.languages.reactscript.ScriptTarget.Latest,
-      allowNonTsExtensions: true,
-      moduleResolution:
-        monaco.languages.reactscript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.reactscript.ModuleKind.CommonJS,
-      noEmit: true,
-      typeRoots: ["node_modules/@types"],
-      types: ["react"],
-      jsx: monaco.languages.reactscript.JsxEmit.Preserve
-    });
+//   const handleMount = () => {
+//     monaco.languages.reactscript.typescriptDefaults.setCompilerOptions({
+//       target: monaco.languages.reactscript.ScriptTarget.Latest,
+//       allowNonTsExtensions: true,
+//       moduleResolution:
+//         monaco.languages.reactscript.ModuleResolutionKind.NodeJs,
+//       module: monaco.languages.reactscript.ModuleKind.CommonJS,
+//       noEmit: true,
+//       typeRoots: ["node_modules/@types"],
+//       types: ["react"],
+//       jsx: monaco.languages.reactscript.JsxEmit.Preserve
+//     });
 
-    monaco.languages.reactscript.typescriptDefaults.addExtraLib(
-      ReactTypes,
-      "file:///react.d.ts"
-    );
+//     monaco.languages.reactscript.typescriptDefaults.addExtraLib(
+//       ReactTypes,
+//       "file:///react.d.ts"
+//     );
 
-    const editor = window.monaco.editor.create(ref.current, {
-      model: monaco.editor.createModel(
-        "<div>Hello World</div>",
-        "reactscript",
-        monaco.Uri.file("file:///file.tsx")
-      ),
-      language: "reactscript",
-      lightbulb: { enabled: true },
-      theme
-    });
+//     const editor = window.monaco.editor.create(ref.current, {
+//       model: monaco.editor.createModel(
+//         "<div>Hello World</div>",
+//         "reactscript",
+//         monaco.Uri.file("file:///file.tsx")
+//       ),
+//       language: "reactscript",
+//       lightbulb: { enabled: true },
+//       theme
+//     });
 
-    onMount(editor);
-    return editor;
-  };
+//     onMount(editor);
+//     return editor;
+//   };
 
-  useMonacoEditorLoader(handleMount);
+//   useMonacoEditorLoader(handleMount);
 
-  return { ref };
-};
+//   return { ref };
+// };
