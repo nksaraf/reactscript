@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "outDir": "monaco-reactscript/dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es5",
+    "paths": {
+      "/web_modules/*.js": [
+        "node_modules/@types/*",
+        "node_modules/*",
+        "web_modules/*.js"
+      ]
+    }
+  },
+  "exclude": ["./node_modules", "./web_modules"],
+  "include": ["src/*"]
+}
