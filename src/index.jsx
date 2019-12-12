@@ -76,10 +76,12 @@ const editorWillMount = monaco => {
 
 const App = () => {
   const [value, setValue] = useState("<div></div>");
+  console.log("here");
   return (
     <ThemeContext.Provider value={theme}>
       <SandpackProvider
         files={files}
+        bundlerURL="http://localhost:8000"
         dependencies={dependencies}
         entry="/index.js"
       >

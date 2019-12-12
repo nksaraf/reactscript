@@ -14,10 +14,13 @@
     "babel": "babel src --extensions .js,.ts,.tsx,.jsx -d dist",
     "copy:src": "copyfiles \"src/*.html\" \"src/**/*.gif\" \"src/*.css\" dist -u 1",
     "copy:modules": "cp -r web_modules dist/web_modules",
-    "dev": "npm run clean && npm run copy && concurrently \"npm run babel -- --watch\" \"serve -s dist\"",
     "lint": "eslint --ext .ts,.tsx src --ignore \"web_modules/**/*.js\"",
     "prestart": "npm run build",
-    "start": "serve -s dist"
+    "start": "serve -s dist",
+    "bundler": "npx http-server node_modules/smooshpack/sandpack -a localhost -p 8000 ",
+    "dev": "concurrently \"npm run bundler\" \"serve . \" \"yarn watch\"",
+    "i": "rm -rf node_modules && yarn install && npx patch-package && pika install",
+    "postinstall": "npx patch-package"
   },
   "keywords": [],
   "author": "Nikhil Saraf",
@@ -37,7 +40,7 @@
     "codesandbox-api": "^0.0.23",
     "codesandbox-import-utils": "^2.1.11",
     "goober": "nksaraf/goober#theme",
-    "preact": "10.1.0",
+    "preact": "10.0.0",
     "preact-compat": "^3.19.0",
     "smooshpack": "*",
     "styled-system": "*"
@@ -73,6 +76,7 @@
     "monaco-editor-core": "^0.18.1",
     "monaco-languages": "^1.8.0",
     "prettier": "^1.19.1",
+    "react-smooshpack": "^0.0.62",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.3",
     "serve": "^11.2.0",
