@@ -126,10 +126,8 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
 
   private _getModel(fileName: string): monaco.worker.IMirrorModel {
     let models = this._ctx.getMirrorModels();
-    console.log(fileName);
     for (let i = 0; i < models.length; i++) {
       if (models[i].uri.toString() === fileName) {
-        console.log(models[i].uri.toString());
         return models[i];
       }
     }
@@ -233,7 +231,6 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
 
   async formatCode(fileName: string): Promise<string> {
     const model = this._getModel(fileName);
-    console.log(model, fileName);
 
     const text = prettier.format(model.getValue(), {
       parser: "babel",
@@ -248,7 +245,6 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
     const sourceFile = this._languageService
       .getProgram()
       .getSourceFile(fileName);
-    console.log(sourceFile);
     printAllChildren(sourceFile);
     return "JSON.stringify(sourceFile.statements.map(({ parent, ...statement }) =>  ({ ...statement})))";
   }

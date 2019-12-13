@@ -1,13 +1,15 @@
 // Must be the first import
 import "preact/debug";
 import { h, render } from "preact";
-import { theme, ThemeProvider, Box } from "./Box/theme";
+import { theme, ThemeProvider, Box } from "./Box";
 import { glob } from "goober";
 import { ReactScriptEditor } from "./ReactScriptEditor";
 import { SandpackProvider } from "./Sandpack/SandpackProvider";
 // import { FileExplorer } from "./FileExplorer/FileExplorer";
 import { BrowserPreview } from "./Preview/BrowserPreview";
 import { createProject } from "./reactscript";
+// const components = require("http://localhost:5000/server/build/index.esm.js");
+// console.log(components);
 
 glob`
   html,
@@ -32,6 +34,7 @@ const App = () => {
         entry="/index.js"
         openedFile="/component.react"
         showOpenInCodeSandbox={false}
+        template="create-react-app"
       >
         <Box display="flex" width="100vw" height="100vh">
           {/* <FileExplorer width={300} /> */}

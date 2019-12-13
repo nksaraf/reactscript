@@ -31,7 +31,7 @@ export const useMonacoLoader = (handleLoad = () => {}) => {
         () => {
           handleLoad();
           setMonaco(window.monaco);
-          setLoaded(true);
+          // setLoaded(true);
         }
       );
     });

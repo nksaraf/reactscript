@@ -73,7 +73,7 @@
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "babel-plugin-import-pika-web": "0.0.5",
-    "babel-plugin-module-resolver": "^3.2.0",
+    "babel-plugin-module-resolver": "^4.0.0",
     "chokidar-cli": "^2.1.0",
     "concurrently": "^5.0.0",
     "copyfiles": "^2.1.1",

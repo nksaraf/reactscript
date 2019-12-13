@@ -201,6 +201,7 @@ export class Manager {
     this.sandboxInfo = sandboxInfo;
 
     const files = this.getFiles();
+    console.log("here");
 
     const modules: IModules = Object.keys(files).reduce(
       (prev, next) => ({

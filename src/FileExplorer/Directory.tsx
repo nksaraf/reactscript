@@ -8,6 +8,7 @@ import { useState } from "preact/hooks";
 import { Box } from "../Box";
 
 export interface Props {
+  x;
   prefixedPath: string;
   files: IFiles;
   selectFile: (path: string) => void;

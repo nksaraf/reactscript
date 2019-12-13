@@ -1,7 +1,46 @@
+import { useState, useEffect } from "preact/hooks";
+import { useSandpack } from "./Sandpack/SandpackProvider";
+
+// const PlayroomProvider = ({ initialCode }) => {
+//   const [code, setCode] = useState(initialCode || "");
+//   const [editor, setEditor] = useState(null);
+//   const sandpack = useSandpack();
+
+//   useEffect(() => {}, []);
+
+//   const updateFiles = files => {
+//     sandpack.updateFiles({
+//       ...sandpack.files,
+//       ...files
+//     });
+//   };
+
+//   const compile = (value: string) => {
+//     // const filename = editor.getModel().uri.toString();
+//     // const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
+//     // const worker = await workerGetter(filename);
+//     // console.log(await worker.getReactScript(filename));
+//     updateFiles({
+//       "/component.react": {
+//         code: value
+//       },
+//       "/component.ts": {
+//         code: `
+//         import React from "react";
+//         export ${compileCode(value)};
+//         `
+//       }
+//     });
+//   };
+// };
+
 export const createProject = () => {
-  const startText = `<div className="App">
-<h1>Hello CodeSandbox</h1>
-<h2>Start editing to see some magic happen!</h2>
+  const startText = `
+const [count, setCount] = React.useState(0)
+
+<div>
+  <h1>Hello CodeSandbox: {count}</h1>
+  <button type="button" onClick={() => setCount(count => count +  1)}>Click Me!</button>
 </div>
 `;
 
@@ -16,17 +55,13 @@ export const createProject = () => {
     `
     },
     "/index.js": {
-      code: `import React from "react";
+      code: `
+import React from "react";
 import ReactDOM from "react-dom";
 import { Code } from "./component";
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <Code />
-    </div>
-  );
+  return <Code />;
 }
 
 const rootElement = document.createElement("root");
@@ -103,8 +138,6 @@ export const iife = (functionString: string) => `(${functionString})()`;
 
 export function compileCode(code: string) {
   //transpileCode
-  console.log(code);
   var compiled = createCodeComponent("Code", parseCode(code));
-  console.log(compiled);
   return compiled;
 }

@@ -3,7 +3,17 @@
     ["import-pika-web", { "dir": "./web_modules" }],
     ["@babel/plugin-transform-react-jsx", { "pragma": "h" }],
     ["@babel/plugin-proposal-object-rest-spread"],
-    ["@babel/plugin-proposal-class-properties", { "loose": true }]
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "test": "./test",
+          "underscore": "lodash"
+        }
+      }
+    ]
   ],
   "presets": [
     "@babel/react",

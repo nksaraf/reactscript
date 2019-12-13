@@ -78,13 +78,14 @@ export function CodeEditor({ ...props }) {
 
 export function ReactScriptEditor({ ...props }) {
   const sandpack = useSandpack();
+  // console.log(sandpack);
   const [editor, setEditor] = useState(null);
   const [onChange] = useDebouncedCallback(
     async (value: string, editor: any) => {
-      const filename = editor.getModel().uri.toString();
-      const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
-      const worker = await workerGetter(filename);
-      console.log(await worker.getReactScript(filename));
+      // const filename = editor.getModel().uri.toString();
+      // const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
+      // const worker = await workerGetter(filename);
+      // console.log(await worker.getReactScript(filename));
       sandpack.updateFiles({
         ...sandpack.files,
         "/component.react": {
