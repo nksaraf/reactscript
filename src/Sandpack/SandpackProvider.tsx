@@ -269,6 +269,83 @@ export const SandpackProvider = ({
   );
 };
 
+export const BundlerProvider = ({
+  files,
+  dependencies,
+  entry,
+  openedFile,
+  children,
+  bundlerURL,
+  initialPath,
+  template,
+  showOpenInCodeSandbox,
+  fileResolver,
+  skipEval,
+  onFileChange
+}: Props) => {
+  const {
+    createManager,
+    errors,
+    managerState,
+    managerStatus,
+    managerRef,
+    getManagerTranspilerContext
+  } = useManager({
+    bundlerURL,
+    fileResolver,
+    skipEval
+  });
+
+  const { sandbox, updateSandbox } = useSandbox({
+    files,
+    dependencies,
+    entry,
+    template,
+    onSandboxChange: sandbox => {
+      a();
+      if (managerRef.current) managerRef.current.updatePreview(sandbox);
+    },
+    showOpenInCodeSandbox
+  });
+
+  const [browserPath, setBrowserPath] = useState(initialPath || "/");
+  const [openedPath, setOpenedPath] = useState(
+    openedFile || entry || "/index.js"
+  );
+
+  const openFile = (path: string) => {
+    setOpenedPath(path);
+  };
+
+  const onBundlerMount = useCallback(el => {
+    createManager(el, sandbox);
+  }, []);
+
+  const getSandpackState = (): ISandpackContext => {
+    return {
+      files: sandbox.files,
+      openedPath,
+      browserPath,
+      errors,
+      managerState,
+      managerStatus,
+      openFile,
+      onBundlerMount,
+      getManagerTranspilerContext,
+      browserFrame: managerRef.current ? managerRef.current.iframe : null,
+      updateFiles: updateSandbox,
+      bundlerURL: managerRef.current ? managerRef.current.bundlerURL : ""
+    };
+  };
+
+  return (
+    <SandpackContext.Provider value={getSandpackState()}>
+      {/* <Bundler onMount={onBundlerMount} bundlerURL={bundlerURL} /> */}
+      {children}
+    </SandpackContext.Provider>
+  );
+};
+
 // export const SandpackProvider = ({
 //   files,
 //   dependencies,
