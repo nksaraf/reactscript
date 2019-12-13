@@ -1,7 +1,7 @@
 import { h } from "preact";
-import { ISandpackContext } from "./types";
+import { ISandpackContext } from "../types";
 import { useRef, useEffect } from "preact/hooks";
-import { useSandpack, Bundler } from "./SandpackProvider";
+import { useSandpack, Bundler } from "../Sandpack/SandpackProvider";
 import { memo } from "preact/compat";
 
 export interface PreviewProps {
@@ -13,7 +13,6 @@ export const Preview = memo(() => {
   const sandpack = useSandpack();
   const browserFrame = sandpack.browserFrame;
   useEffect(() => {
-    console.log("styling");
     if (browserFrame) {
       browserFrame.style.width = "100%";
       browserFrame.style.height = "500px";
@@ -21,8 +20,6 @@ export const Preview = memo(() => {
       browserFrame.style.position = "relative";
     }
   }, [browserFrame]);
-
-  console.log(sandpack);
 
   return (
     <div ref={ref}>

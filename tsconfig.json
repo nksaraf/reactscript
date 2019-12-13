@@ -21,5 +21,21 @@
     }
   },
   "exclude": ["./node_modules", "./web_modules"],
-  "include": ["src/*", "react-sandpack/File", "react-sandpack/Directory"]
+  "include": [, "src/Box/colors.js", "src/Preview/icons.tsx", "src/Sandp, "src/Sandpack/SandpackProvider.tsx"ack/manager.ts"
+    "src/*",
+    "react-sandpack/File",
+    "react-sandpack/Directory",
+    "src/Preview/Navigator.tsx",
+    "src/FileExplorer/ModuleList.tsx",
+    "src/FileExplorer/File.tsx",
+    "src/FileExplorer/Directory.tsx",
+    "src/FileExplorer/FileExplorer.tsx",
+    "src/Preview/Preview.tsx",
+    "src/Preview/BrowserPreview.tsx",
+    "src/Box/theme.js",
+    "src/Box/Box.jsx",
+    "src/MonacoEditor/Editor.jsx",
+    "src/MonacoEditor/useMonacoEditor.js",
+    "CodeEnv"
+  ]
 }

@@ -1,0 +1,31 @@
+{
+  "name": "codesandbox-utils",
+  "version": "1.0.0",
+  "license": "MIT",
+  "files": [
+    "dist-*/",
+    "bin/"
+  ],
+  "pika": true,
+  "sideEffects": false,
+  "dependencies": {
+    "acorn-jsx": "^5.1.0",
+    "codesandbox-import-util-types": "^2.1.9",
+    "codesandbox-import-utils": "^2.1.11",
+    "lodash.isequal": "^4.5.0",
+    "path": "^0.12.7",
+    "shortid": "^2.2.15",
+    "use-debounce-preact": "^1.0.2"
+  },
+  "devDependencies": {
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-types": "*",
+    "@pika/plugin-build-web": "*",
+    "@pika/plugin-bundle-web": "^0.8.1",
+    "@pika/plugin-standard-pkg": "*",
+    "@pika/plugin-ts-standard-pkg": "^0.8.1"
+  },
+  "esnext": "dist-src/index.js",
+  "module": "dist-web/index.js",
+  "browser": "dist-web/index.bundled.js"
+}

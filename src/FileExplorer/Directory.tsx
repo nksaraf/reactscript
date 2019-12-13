@@ -1,11 +1,11 @@
 import { h } from "preact";
 
 import { File } from "./File";
-// import { ModuleList } from "./ModuleList";
+import { ModuleList } from "../ModuleList";
 
-import { IFiles } from "./types";
+import { IFiles } from "../types";
 import { useState } from "preact/hooks";
-import { Box } from "./Box";
+import { Box } from "../Box";
 
 export interface Props {
   prefixedPath: string;
@@ -32,14 +32,13 @@ export const Directory = ({
     <Box key={prefixedPath}>
       <File onClick={toggleOpen} path={prefixedPath + "/"} />
       {open && (
-        <div></div>
-        // <ModuleList
-        //   prefixedPath={prefixedPath}
-        //   files={files}
-        //   selectFile={selectFile}
-        //   openedPath={openedPath}
-        //   depth={depth}
-        // />
+        <ModuleList
+          prefixedPath={prefixedPath}
+          files={files}
+          selectFile={selectFile}
+          openedPath={openedPath}
+          depth={depth}
+        />
       )}
     </Box>
   );

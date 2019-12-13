@@ -1,0 +1,37 @@
+{
+  "name": "codesandbox-utils",
+  "version": "1.0.0",
+  "module": "index.js",
+  "author": "Nikhil Saraf",
+  "license": "MIT",
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-web"
+      ],
+      [
+        "@pika/plugin-bundle-web"
+      ]
+    ]
+  },
+  "dependencies": {
+    "acorn-jsx": "^5.1.0",
+    "codesandbox-import-util-types": "^2.1.9",
+    "codesandbox-import-utils": "^2.1.11",
+    "lodash.isequal": "^4.5.0",
+    "path": "^0.12.7",
+    "shortid": "^2.2.15",
+    "use-debounce-preact": "^1.0.2"
+  },
+  "devDependencies": {
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-types": "*",
+    "@pika/plugin-build-web": "*",
+    "@pika/plugin-bundle-web": "^0.8.1",
+    "@pika/plugin-standard-pkg": "*",
+    "@pika/plugin-ts-standard-pkg": "^0.8.1"
+  }
+}

@@ -1,8 +1,9 @@
-import { IFiles, IFile } from "./types";
+
+import { IFiles, IFile } from "../types";
 
 import { File } from "./File";
 import { Directory } from "./Directory";
-import { Box } from "./Box";
+import { Box } from "../Box";
 import { h } from "preact";
 
 export interface Props {
