@@ -73,7 +73,8 @@ ReactDOM.render(<App />, rootElement);
 
   const dependencies = {
     react: "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "prop-types": "latest"
   };
 
   return { files, dependencies };

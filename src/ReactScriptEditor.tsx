@@ -1,10 +1,11 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
-import { useSandpack } from "./Sandpack/SandpackProvider";
+// import { useSandpack } from "./Sandpack/SandpackProvider";
 import { MonacoEditor } from "./MonacoEditor/MonacoEditor";
 import ReactTypes from "./@types/react";
 import { useDebouncedCallback } from "codesandbox-utils";
 import { compileCode } from "./reactscript";
+import { useSandbox } from "./Sandpack/sandbox";
 
 const monacoOptions = {
   automaticLayout: true,
@@ -77,7 +78,7 @@ export function CodeEditor({ ...props }) {
 }
 
 export function ReactScriptEditor({ ...props }) {
-  const sandpack = useSandpack();
+  const { sandbox, openedPath, updateFiles } = useSandbox();
   // console.log(sandpack);
   const [editor, setEditor] = useState(null);
   const [onChange] = useDebouncedCallback(
@@ -86,18 +87,20 @@ export function ReactScriptEditor({ ...props }) {
       // const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
       // const worker = await workerGetter(filename);
       // console.log(await worker.getReactScript(filename));
-      sandpack.updateFiles({
-        ...sandpack.files,
-        "/component.react": {
-          code: value
-        },
-        "/component.js": {
-          code: `
-          import React from "react";
-          export ${compileCode(value)};
-          `
-        }
-      });
+      if (sandbox.files["/component.react"].code !== value) {
+        updateFiles(files => ({
+          ...files,
+          "/component.react": {
+            code: value
+          },
+          "/component.js": {
+            code: `
+            import React from "react";
+            export ${compileCode(value)};
+            `
+          }
+        }));
+      }
 
       // const parsed = parser.parse(value, {
       //   sourceType: "module",
@@ -109,7 +112,6 @@ export function ReactScriptEditor({ ...props }) {
       //   enter: function(node, parent, prop, index) {
       //     if (node.type === "Program") {
       //       console.log(node);
-
       //       body = node.body;
       //       this.skip();
       //     }
@@ -125,9 +127,11 @@ export function ReactScriptEditor({ ...props }) {
     []
   );
 
+  // console.log(sandbox.files, openedPath);
+
   return (
     <MonacoEditor
-      value={sandpack.files[sandpack.openedPath].code}
+      value={sandbox.files[openedPath].code}
       onChange={onChange}
       height="100%"
       options={monacoOptions}
