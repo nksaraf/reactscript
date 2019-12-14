@@ -31,11 +31,15 @@ const editorWillMount = monaco => {
     allowNonTsExtensions: true,
     moduleResolution: monaco.languages.reactscript.ModuleResolutionKind.NodeJs,
     module: monaco.languages.reactscript.ModuleKind.CommonJS,
-    noEmit: true,
     typeRoots: ["node_modules/@types"],
     types: ["react"],
     allowSyntheticDefaultImports: true,
     jsx: monaco.languages.reactscript.JsxEmit.Preserve
+  });
+
+  monaco.languages.reactscript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: true
   });
 
   monaco.languages.reactscript.typescriptDefaults.addExtraLib(
@@ -83,23 +87,24 @@ export function ReactScriptEditor({ ...props }) {
   const [editor, setEditor] = useState(null);
   const [onChange] = useDebouncedCallback(
     async (value: string, editor: any) => {
-      // const filename = editor.getModel().uri.toString();
-      // const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
-      // const worker = await workerGetter(filename);
-      // console.log(await worker.getReactScript(filename));
-      if (sandbox.files["/component.react"].code !== value) {
-        updateFiles(files => ({
-          ...files,
-          "/component.react": {
-            code: value
-          },
-          "/component.js": {
-            code: `
+      updateFiles(files => ({
+        ...files,
+        "/component.react": {
+          code: value
+        },
+        "/component.js": {
+          code: `
             import React from "react";
             export ${compileCode(value)};
             `
-          }
-        }));
+        }
+      }));
+
+      const filename = editor.getModel().uri.toString();
+      const workerGetter = await monaco.languages.reactscript.getReactScriptWorker();
+      const worker = await workerGetter(filename);
+      console.log(await worker.getReactScript(filename));
+      if (sandbox.files["/component.react"].code !== value) {
       }
 
       // const parsed = parser.parse(value, {
@@ -136,8 +141,7 @@ export function ReactScriptEditor({ ...props }) {
       height="100%"
       options={monacoOptions}
       {...props}
-      theme="vs-light"
-      style={{ border: "1px solid grey" }}
+      theme="vs-dark"
       language="reactscript"
       editorWillMount={editorWillMount}
       editorDidMount={editor => setEditor(editor)}

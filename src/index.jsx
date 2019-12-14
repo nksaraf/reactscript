@@ -43,8 +43,22 @@ const App = () => {
           <Box display="flex" width="100vw" height="100vh">
             <ReactScriptEditor style={{ flex: 1 }} />
             <Box display="flex" flexDirection="column" flex={1}>
-              <SandpackFrame style={{ flex: "1", width: "100%" }} />
-              <SandpackFrame style={{ flex: "1", width: "100%" }} />
+              <SandpackFrame
+                style={{
+                  flex: "1",
+                  width: "100%",
+                  border: "none",
+                  outline: "none"
+                }}
+              />
+              <SandpackFrame
+                style={{
+                  flex: "1",
+                  width: "100%",
+                  border: "none",
+                  outline: "none"
+                }}
+              />
             </Box>
           </Box>
         </SandboxProvider>

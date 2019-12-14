@@ -61,6 +61,8 @@ export const useMonacoLoader = (handleLoad = () => {}) => {
       } else {
         onMonacoLoad({});
       }
+    } else {
+      setMonaco(window.monaco);
     }
   }, []);
 

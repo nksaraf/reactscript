@@ -7,83 +7,12 @@
 import * as ts from "./lib/typescriptServices";
 import { lib_dts, lib_es6_dts } from "./lib/lib";
 import { IExtraLibs } from "./monaco.contribution";
-import prettier from "./lib/standalone";
-import babylon from "./lib/parser-babylon";
+
+import { util } from "./util";
 
 import IWorkerContext = monaco.worker.IWorkerContext;
 import ReactTypes from "./@types/react";
-
-function formatEnum(value, enumObject, isFlags) {
-  if (value === void 0) {
-    value = 0;
-  }
-  var members = getEnumMembers(enumObject);
-  if (value === 0) {
-    return members.length > 0 && members[0][0] === 0 ? members[0][1] : "0";
-  }
-  if (isFlags) {
-    var result = "";
-    var remainingFlags = value;
-    for (var i = members.length - 1; i >= 0 && remainingFlags !== 0; i--) {
-      var _a = members[i],
-        enumValue = _a[0],
-        enumName = _a[1];
-      if (enumValue !== 0 && (remainingFlags & enumValue) === enumValue) {
-        remainingFlags &= ~enumValue;
-        result = "" + enumName + (result ? "|" : "") + result;
-      }
-    }
-    if (remainingFlags === 0) {
-      return result;
-    }
-  } else {
-    for (var _i = 0, members_1 = members; _i < members_1.length; _i++) {
-      var _b = members_1[_i],
-        enumValue = _b[0],
-        enumName = _b[1];
-      if (enumValue === value) {
-        return enumName;
-      }
-    }
-  }
-  return value.toString();
-}
-
-function getEnumMembers(enumObject) {
-  var result = [];
-  for (var name in enumObject) {
-    var value = enumObject[name];
-    if (typeof value === "number") {
-      result.push([value, name]);
-    }
-  }
-  return result.sort();
-}
-
-function formatSyntaxKind(kind) {
-  return formatEnum(kind, ts.SyntaxKind, /*isFlags*/ false);
-}
-
-function printAllChildren(node: ts.Node, depth = 0) {
-  depth++;
-  if (node.getChildCount() > 0) {
-    console.group(
-      new Array(depth + 1).join("----"),
-      formatSyntaxKind(node.kind),
-      node.pos,
-      node.end
-    );
-    node.getChildren().forEach(c => printAllChildren(c, depth));
-    console.groupEnd();
-  } else {
-    console.log(
-      new Array(depth + 1).join("----"),
-      formatSyntaxKind(node.kind),
-      node.pos,
-      node.end
-    );
-  }
-}
+import { formatCode } from "./prettify";
 
 const DEFAULT_LIB = {
   NAME: "defaultLib:lib.d.ts",
@@ -111,6 +40,26 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
       content: ReactTypes,
       version: 0
     };
+  }
+
+  getProgram() {
+    return this._languageService.getProgram();
+  }
+
+  getCode(fileName: string) {
+    return this._getModel(fileName).getValue();
+  }
+
+  async getReactScript(fileName: string): Promise<string> {
+    // const sourceFile = this._languageService
+    //   .getProgram()
+    //   .getSourceFile(fileName);
+    const model = this._getModel(fileName);
+    const formatted = formatCode(model.getValue());
+    console.log(formatted);
+    util(this._languageService.getProgram(), fileName);
+    return "";
+    // printAllChildren(sourceFile);
   }
 
   // --- language service host ---------------
@@ -227,26 +176,6 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
     const diagnostics = this._languageService.getSemanticDiagnostics(fileName);
     ReactScriptWorker.clearFiles(diagnostics);
     return Promise.resolve(diagnostics);
-  }
-
-  async formatCode(fileName: string): Promise<string> {
-    const model = this._getModel(fileName);
-
-    const text = prettier.format(model.getValue(), {
-      parser: "babel",
-      plugins: [babylon],
-      singleQuote: true
-    });
-
-    return text;
-  }
-
-  async getReactScript(fileName: string): Promise<string> {
-    const sourceFile = this._languageService
-      .getProgram()
-      .getSourceFile(fileName);
-    printAllChildren(sourceFile);
-    return "JSON.stringify(sourceFile.statements.map(({ parent, ...statement }) =>  ({ ...statement})))";
   }
 
   getSuggestionDiagnostics(

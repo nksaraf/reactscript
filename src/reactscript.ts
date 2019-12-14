@@ -36,7 +36,7 @@ import { useSandpack } from "./Sandpack/SandpackProvider";
 
 export const createProject = () => {
   const startText = `
-const [count, setCount] = React.useState(0)
+const [count, setCount] = React.useState(0);
 
 <div>
   <h1>Hello CodeSandbox: {count}</h1>
