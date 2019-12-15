@@ -17,6 +17,7 @@ export const MonacoEditor = ({
   width = 600,
   defaultValue = "",
   className,
+  fileName,
   style,
   overrideServices = {},
   onChange = noop,
@@ -37,14 +38,16 @@ export const MonacoEditor = ({
       // Before initializing monaco editor
       Object.assign(options, editorWillMount(monaco) || {});
 
+      const model = monaco.editor.createModel(
+        value,
+        language,
+        monaco.Uri.file(fileName)
+      );
+
       const editor = monaco.editor.create(
         ref.current,
         {
-          model: monaco.editor.createModel(
-            value,
-            language,
-            monaco.Uri.file("file.tsx")
-          ),
+          model,
           language,
           ...options,
           ...(theme ? { theme } : {})
@@ -52,6 +55,8 @@ export const MonacoEditor = ({
         overrideServices
       );
       // After initializing monaco editor
+
+      model.updateOptions({ tabSize: 2 });
       editorDidMount(editor, monaco);
 
       subscription = editor.onDidChangeModelContent(event => {

@@ -44,40 +44,58 @@ const [SandboxProvider, useSandbox] = createHookContext(
     const [sandboxFiles, setSandboxFiles] = useState(
       prepareSandboxFiles(files, dependencies, entry)
     );
+    const [sandbox, setSandbox] = useState({
+      files: sandboxFiles,
+      template,
+      showOpenInCodeSandbox
+    });
+
+    const [compiling, setCompiling] = useState(false);
 
     const [openedPath, setOpenedPath] = useState(defaultOpenedPath);
 
     const { updatePreview } = useBundler();
 
     function updateFiles(files: IFiles) {
-      setSandboxFiles(oldFiles => {
-        let updatedFiles;
-        if (typeof files === "function") {
-          updatedFiles = files(oldFiles);
-        } else {
-          updatedFiles = files;
-        }
+      const _files = typeof files === "function" ? files(sandboxFiles) : files;
 
-        updatedFiles = prepareSandboxFiles(updatedFiles, dependencies, entry);
-
-        if (sandboxTransform) {
-          updatedFiles = sandboxTransform(updatedFiles);
-        }
-
-        let sandbox = {
-          files: updatedFiles,
-          showOpenInCodeSandbox,
-          template
-        };
-
-        if (onSandboxChange) {
-          onSandboxChange(sandbox);
-        }
-
-        updatePreview(sandbox);
-        return updatedFiles;
+      setSandboxFiles(_files);
+      setSandbox({
+        files: _files,
+        template,
+        showOpenInCodeSandbox
       });
     }
+
+    const updateSandbox = async (files: any) => {
+      // setCompiling(true);
+      let updatedFiles = prepareSandboxFiles(files, dependencies, entry);
+
+      if (sandboxTransform) {
+        updatedFiles = await sandboxTransform(updatedFiles);
+      }
+
+      let sandbox = {
+        files: updatedFiles,
+        showOpenInCodeSandbox,
+        template
+      };
+
+      if (onSandboxChange) {
+        onSandboxChange(sandbox);
+      }
+
+      updatePreview(sandbox);
+      setSandbox(sandbox);
+      // setSandboxFiles(updatedFiles);
+      // setCompiling(false);
+    };
+
+    useEffect(() => {
+      if (!compiling) {
+        updateSandbox(sandboxFiles);
+      }
+    }, [sandboxFiles]);
 
     // useEffect(() => {
     //   updateSandbox(files, dependencies, entry);
@@ -85,11 +103,7 @@ const [SandboxProvider, useSandbox] = createHookContext(
 
     useCodesandbox(message => {
       if (message.type === "initialized") {
-        updatePreview({
-          files: sandboxFiles,
-          showOpenInCodeSandbox,
-          template
-        });
+        updatePreview(sandbox);
       }
     });
 
@@ -111,11 +125,7 @@ const [SandboxProvider, useSandbox] = createHookContext(
     // }, []);
 
     return {
-      sandbox: {
-        files: sandboxFiles,
-        showOpenInCodeSandbox,
-        template
-      },
+      sandbox,
       openedPath,
       updateFiles
     };

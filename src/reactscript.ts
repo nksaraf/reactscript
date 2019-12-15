@@ -36,11 +36,19 @@ import { useSandpack } from "./Sandpack/SandpackProvider";
 
 export const createProject = () => {
   const startText = `
+{
+  const Count = ({ count }) => {
+    return <h1>{count}</h1>;
+  };
+}
 const [count, setCount] = React.useState(0);
 
 <div>
-  <h1>Hello CodeSandbox: {count}</h1>
-  <button type="button" onClick={() => setCount(count => count +  1)}>Click Me!</button>
+  <h1>Hello CodeSadbox</h1>
+  <button type="button" onClick={() => setCount(count => count + 1)}>
+    Click Me!
+  </button>
+  <Count count={count} />
 </div>
 `;
 
@@ -50,8 +58,22 @@ const [count, setCount] = React.useState(0);
     },
     "/component.jsx": {
       code: `
-    import React from "react";
-    export ${compileCode(startText)}
+import React from 'react';
+const Count = ({ count }) => {
+  return <h1>{count}</h1>;
+};
+export function Code() {
+  const [count, setCount] = React.useState(0);
+  return (
+    <div>
+      <h1>Hello CodeSadbox</h1>
+      <button type="button" onClick={() => setCount(count => count + 1)}>
+        Click Me!
+      </button>
+      <Count count={count} />
+    </div>
+  );
+}    
     `
     },
     "/index.jsx": {

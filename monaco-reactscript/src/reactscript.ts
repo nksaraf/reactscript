@@ -8,12 +8,11 @@ import * as ts from "./lib/typescriptServices";
 import { lib_dts, lib_es6_dts } from "./lib/lib";
 import * as fetchTypings from "./typings";
 
-import { formatCode } from "./prettify";
+import { compile, format } from "./compiler";
 // import * as ls from "./lib/emmet/expand/languageserver-types";
 // import * as emmet from "./lib/emmet/emmetHelper";
 
 import IWorkerContext = monaco.worker.IWorkerContext;
-import { textAlign } from "styled-system";
 
 const DEFAULT_LIB = {
   NAME: "defaultLib:lib.d.ts",
@@ -115,10 +114,19 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
     // );
   }
 
+  getSourceFile(filename: string) {
+    return this._languageService.getProgram().getSourceFile(filename);
+  }
+
   getReactScript(filename: string) {
-    const model = this._getModel(filename);
-    console.log(model);
-    console.log(this);
+    return compile(this.getSourceFile(filename));
+
+    // console.log(model);
+    // console.log(this);
+  }
+
+  getCode(filename: string) {
+    return this._getModel(filename).getValue();
   }
 
   getTypings() {
@@ -574,10 +582,7 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
     fileName: string,
     options: ts.FormatCodeOptions
   ): Promise<ts.TextChange[]> {
-    const model = this._getModel(fileName);
-    // console.log(model.getFullModelRange());
-    console.log(model, formatCode(model.getValue()));
-    return Promise.resolve(formatCode(model.getValue()));
+    return Promise.resolve(format(this.getSourceFile(fileName)));
   }
 
   getFormattingEditsForRange(

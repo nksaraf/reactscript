@@ -3,7 +3,7 @@ import "preact/debug";
 import { h, render } from "preact";
 import { theme, ThemeProvider, Box } from "./Box";
 import { glob } from "goober";
-import { ReactScriptEditor } from "./ReactScriptEditor";
+import { ReactScriptEditor, reactScript } from "./ReactScriptEditor";
 // import { SandpackProvider } from "./Sandpack/SandpackProvider";
 import { BundlerProvider } from "./Sandpack/bundler";
 import { SandpackFrame } from "./Sandpack/frame";
@@ -32,12 +32,14 @@ glob`
 `;
 
 const App = () => {
+  // const reactScript = useReactScript();
   return (
     <ThemeProvider value={theme}>
       <BundlerProvider bundlerURL={`http://localhost:8000`}>
         <SandboxProvider
           {...createProject()}
           entry="/index.jsx"
+          sandboxTransform={reactScript}
           openedPath="/component.react"
         >
           <Box display="flex" width="100vw" height="100vh">
