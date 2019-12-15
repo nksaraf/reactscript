@@ -92,7 +92,7 @@ export function ReactScriptEditor({ ...props }) {
         "/component.react": {
           code: value
         },
-        "/component.js": {
+        "/component.jsx": {
           code: `
             import React from "react";
             export ${compileCode(value)};

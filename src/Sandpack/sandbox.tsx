@@ -93,22 +93,22 @@ const [SandboxProvider, useSandbox] = createHookContext(
       }
     });
 
-    useEffect(() => {
-      fetch("http://localhost:5000/server/build/index.esm.js")
-        .then(body => body.text())
-        .then(content => {
-          console.log(content);
-          updateFiles(files => ({
-            ...files,
-            "/index.js": {
-              code:
-                "import * as components from './lib'; console.log(components);" +
-                files["/index.js"].code
-            },
-            "/lib.js": { code: content }
-          }));
-        });
-    }, []);
+    // useEffect(() => {
+    //   fetch("http://localhost:5000/server/build/index.esm.js")
+    //     .then(body => body.text())
+    //     .then(content => {
+    //       console.log(content);
+    //       updateFiles(files => ({
+    //         ...files,
+    //         "/index.js": {
+    //           code:
+    //             "import * as components from './lib'; console.log(components);" +
+    //             files["/index.js"].code
+    //         },
+    //         "/lib.js": { code: content }
+    //       }));
+    //     });
+    // }, []);
 
     return {
       sandbox: {

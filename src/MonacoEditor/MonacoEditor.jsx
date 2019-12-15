@@ -43,7 +43,7 @@ export const MonacoEditor = ({
           model: monaco.editor.createModel(
             value,
             language,
-            monaco.Uri.file("file:///file.tsx")
+            monaco.Uri.file("file.tsx")
           ),
           language,
           ...options,

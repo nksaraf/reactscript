@@ -48,13 +48,13 @@ const [count, setCount] = React.useState(0);
     "/component.react": {
       code: startText
     },
-    "/component.js": {
+    "/component.jsx": {
       code: `
     import React from "react";
     export ${compileCode(startText)}
     `
     },
-    "/index.js": {
+    "/index.jsx": {
       code: `
 import React from "react";
 import ReactDOM from "react-dom";

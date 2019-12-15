@@ -37,7 +37,7 @@ const App = () => {
       <BundlerProvider bundlerURL={`http://localhost:8000`}>
         <SandboxProvider
           {...createProject()}
-          entry="/index.js"
+          entry="/index.jsx"
           openedPath="/component.react"
         >
           <Box display="flex" width="100vw" height="100vh">
