@@ -1,7 +1,7 @@
-import { useState, useEffect, useReducer } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import ky from "ky";
 import { Store, set, get, clear as clearStore, del, clear } from "idb-keyval";
-
+import { useReducer } from "./useReducer";
 function downloadMiddleware(dispatch) {
   return ({ type, data }) => {
     console.log(type, data);
@@ -90,7 +90,6 @@ export const useFileSystem = (
   useEffect(() => {
     get("files", store).then(val => {
       if (val != undefined) {
-        console.log(val);
         writeFiles(val);
       }
     });
