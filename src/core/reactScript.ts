@@ -1,5 +1,4 @@
-export const createProject = () => {
-  const startText = `
+const componentReact = `
 {
   const Count = ({ count }) => {
     return <h1>{count}</h1>;
@@ -16,12 +15,7 @@ const [count, setCount] = React.useState(0);
 </div>
 `;
 
-  const files = {
-    "/component.react": {
-      text: startText
-    },
-    "/component.jsx": {
-      text: `
+const componentJsx = `
 import React from 'react';
 const Count = ({ count }) => {
   return <h1>{count}</h1>;
@@ -38,10 +32,9 @@ export function Code() {
     </div>
   );
 }    
-    `
-    },
-    "/index.jsx": {
-      text: `
+`;
+
+const indexJs = `
 import React from "react";
 import ReactDOM from "react-dom";
 import { Code } from "./component";
@@ -53,21 +46,40 @@ function App() {
 const rootElement = document.createElement("root");
 document.body.appendChild(rootElement);
 ReactDOM.render(<App />, rootElement);
-    `
+`;
+
+const libJs = `
+export * from "@playroom/react-box";
+`;
+
+export const createProject = () => {
+  const files = {
+    "/component.react": {
+      text: componentReact
+    },
+    "/component.jsx": {
+      text: componentJsx
+    },
+    "/index.jsx": {
+      text: indexJs
+    },
+    "/lib.js": {
+      text: libJs
     }
   };
 
   const dependencies = {
     react: "latest",
     "react-dom": "latest",
-    "prop-types": "latest"
+    "prop-types": "latest",
+    "@playroom/react-box": "latest",
+    "styled-components": "latest"
   };
 
   return { files, dependencies };
 };
 
 export const reactScript = async files => {
-  // console.log(files);
   if (window.monaco && window.monaco.languages.reactscript) {
     const workerGetter = await window.monaco.languages.reactscript.getReactScriptWorker();
     const uri = window.monaco.Uri.file("component.tsx").toString();

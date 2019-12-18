@@ -5,18 +5,10 @@ import { theme, ThemeProvider, Box } from "./Box";
 import { glob } from "goober";
 import { ReactScriptEditor } from "./core/ReactScriptEditor";
 import { reactScript } from "./core/reactScript";
-// import { SandpackProvider } from "./Sandpack/SandpackProvider";
 import { BundlerProvider } from "./core/useBundler";
 import { SandpackIFrame } from "./core/SandpackIFrame";
 import { SandboxProvider } from "./core/useSandbox";
 import { createProject } from "./core/reactScript";
-
-// import { version } from "codesandbox-utils";
-// // import { FileExplorer } from "./FileExplorer/FileExplorer";
-// import { BrowserPreview } from "./Preview/BrowserPreview";
-// import { createProject } from "./reactscript";
-// const components = require("http://localhost:5000/server/build/index.esm.js");
-// console.log(components);
 
 glob`
   html,

@@ -62,7 +62,6 @@ const [SandboxProvider, useSandbox] = createHookContext(
     showOpenInCodeSandbox = false
   }) => {
     const updateSandbox = async (files: any) => {
-      // setCompiling(true);
       let updatedFiles = prepareSandboxFiles(files, dependencies, entry);
 
       // if (sandboxTransform) {
@@ -80,37 +79,14 @@ const [SandboxProvider, useSandbox] = createHookContext(
       if (onSandboxChange) {
         onSandboxChange(sandbox);
       }
-      // console.log(sandbox);
       updatePreview(sandbox);
       return updatedFiles;
-      // setSandbox(sandbox);
-      // setSandboxFiles(updatedFiles);
-      // setCompiling(false);
     };
-
-    // const middleware = dispatch => {
-    //   return ({ type, data }) => {
-    //     switch (type) {
-    //       case types.WRITE_FILE:
-    //         (async () => {
-    //           const content = await ky(data.url).json();
-    //           console.log(data);
-    //           dispatch({
-    //             type: types.WRITE_FILE,
-    //             data: { path: data.path, text: content }
-    //           });
-    //         })();
-    //         break;
-    //       default:
-    //         return dispatch({ type, data });
-    //     }
-    //   };
-    // };
-
     const {
       files: sandboxFiles,
       writeFiles,
       downloadFile,
+      dispatch,
       // updateFiles: setSandboxFiles,
       writeFile
     } = useFileSystem(
@@ -122,15 +98,28 @@ const [SandboxProvider, useSandbox] = createHookContext(
             case types.WRITE_FILE:
               if (data.path.split(".").pop() === "react") {
                 (async () => {
-                  const files = { ...(await reactScript({})) };
-
                   dispatch({
                     type: types.WRITE_FILES,
-                    data: { files }
+                    data: { files: { ...(await reactScript({})) } }
                   });
                 })();
               }
               dispatch({ type, data });
+              break;
+            case "IMPORT_LIB":
+              dispatch({
+                type: types.DOWNLOAD_FILE,
+                data
+              });
+              dispatch({
+                type: types.APPEND_TO_FILE,
+                data: {
+                  path: "/lib.js",
+                  text: `\nexport * from '.${data.path}'`
+                }
+              });
+              break;
+
             default:
               dispatch({ type, data });
           }
@@ -149,22 +138,6 @@ const [SandboxProvider, useSandbox] = createHookContext(
       updateSandbox(sandboxFiles);
     }, [sandboxFiles]);
 
-    // const updateFiles = (files: IFiles) => {
-    //   const _files = typeof files === "function" ? files(sandboxFiles) : files;
-
-    //   setSandboxFiles(_files);
-    // };
-
-    // useEffect(() => {
-    //   if (!compiling) {
-    //     updateSandbox(sandboxFiles);
-    //   }
-    // }, [sandboxFiles]);
-
-    // useEffect(() => {
-    //   updateSandbox(files, dependencies, entry);
-    // }, [files, dependencies, entry, template]);
-
     useCodesandbox(message => {
       if (message.type === "initialized") {
         updatePreview({
@@ -177,6 +150,8 @@ const [SandboxProvider, useSandbox] = createHookContext(
       }
     });
 
+    window.dispatch = dispatch;
+
     return {
       // sandbox,
       downloadFile,
@@ -184,7 +159,8 @@ const [SandboxProvider, useSandbox] = createHookContext(
       // readFiles,
       openedPath,
       writeFiles,
-      writeFile
+      writeFile,
+      dispatch
     };
   }
 );

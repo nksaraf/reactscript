@@ -1,13 +1,14 @@
 import { useState, useEffect, useReducer } from "preact/hooks";
 import ky from "ky";
+import { Store, set, get, clear as clearStore, del, clear } from "idb-keyval";
 
 function downloadMiddleware(dispatch) {
   return ({ type, data }) => {
+    console.log(type, data);
     switch (type) {
       case types.DOWNLOAD_FILE:
         (async () => {
           const content = await ky(data.url).text();
-          console.log(data);
           dispatch({
             type: types.WRITE_FILE,
             data: { path: data.path, text: content }
@@ -27,8 +28,12 @@ export const types = {
   READ_FILES: "READ_FILES",
   DOWNLOAD_FILE: "DOWNLOAD_FILE",
   DELETE_FILE: "DELETE_FILE",
+  APPEND_TO_FILE: "APPEND_TO_FILE",
   RESET: "RESET"
 };
+
+const store = new Store("play", "sandbox");
+// clear(store);
 
 const reducer = (state, { type, data }) => {
   switch (type) {
@@ -38,6 +43,11 @@ const reducer = (state, { type, data }) => {
       return { ...state, ...data.files };
     case types.RESET:
       return {};
+    case types.APPEND_TO_FILE:
+      return {
+        ...state,
+        [data.path]: { text: state[data.path].text + data.text }
+      };
     default:
       throw new Error("Unexpected action");
   }
@@ -49,7 +59,7 @@ export const useFileSystem = (
   middleware = dispatch => dispatch
 ) => {
   const [files, dispatch] = useReducer(reducer, initialFiles);
-  const modDispatch = downloadMiddleware(middleware(dispatch));
+  const modDispatch = middleware(downloadMiddleware(dispatch));
 
   const downloadFile = (url, path) =>
     modDispatch({
@@ -77,7 +87,31 @@ export const useFileSystem = (
       }
     });
 
-  return { files, dispatch: modDispatch, writeFile, writeFiles, downloadFile };
+  useEffect(() => {
+    get("files", store).then(val => {
+      if (val != undefined) {
+        console.log(val);
+        writeFiles(val);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    set("files", files, store);
+  }, [files]);
+
+  const clear = () => {
+    clearStore(store);
+  };
+
+  return {
+    files,
+    dispatch: modDispatch,
+    writeFile,
+    writeFiles,
+    downloadFile,
+    clear
+  };
 };
 
 // function App() {

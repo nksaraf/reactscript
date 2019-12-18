@@ -1,10 +1,4 @@
 import { useState } from "preact/hooks";
-import {
-  IManagerOptions,
-  IDependencies,
-  IModules,
-  ISandboxInfo
-} from "./IManagerOptions";
 import { dispatch } from "codesandbox-api";
 import { getTemplate } from "codesandbox-utils";
 import { createHookContext } from "./createHookContext";

@@ -6,6 +6,7 @@ import { MonacoEditor } from "../MonacoEditor/MonacoEditor";
 import ReactTypes from "../@types/react";
 import { useDebouncedCallback } from "codesandbox-utils";
 import { useSandbox } from "./useSandbox";
+import { useClipboard } from "./useClipboard";
 
 const monacoOptions = {
   automaticLayout: true,
@@ -50,22 +51,79 @@ const editorWillMount = monaco => {
 };
 
 export function ReactScriptEditor({ ...props }) {
+  const clipboard = useClipboard();
+  const [editor, setEditor] = useState(null);
+
   const {
     sandboxFiles,
     openedPath,
     writeFile,
     writeFiles,
-    downloadFile
+    downloadFile,
+    dispatch
     // setSandboxFiles,
     // sandboxFiles,
     // addFile,
   } = useSandbox();
 
   useEffect(() => {
-    downloadFile("http://localhost:5000/server/build/index.esm.js", "/lib.js");
+    dispatch({
+      type: "IMPORT_LIB",
+      data: {
+        url: "http://localhost:5000/server/build/index.esm.js",
+        path: "/served.js"
+      }
+    });
   }, []);
 
-  const [editor, setEditor] = useState(null);
+  const editorDidMount = (editor, monaco) => {
+    setEditor(editor);
+    const copyComponentToClipboard = () => {
+      clipboard.copy(sandboxFiles["/component.jsx"].text);
+    };
+
+    const keyDownListener = (e: any) => {
+      if (
+        e.code === "KeyS" &&
+        (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
+      ) {
+        e.preventDefault();
+        editor.trigger("", "editor.action.formatDocument", null);
+      } else if (
+        e.code === "KeyE" &&
+        (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
+      ) {
+        e.preventDefault();
+        copyComponentToClipboard();
+      }
+    };
+
+    window.addEventListener("keydown", keyDownListener);
+
+    editor.addAction({
+      label: "Export ReactScript Component",
+      id: "export-reactscript",
+      run: () => {}
+    });
+
+    // editor.addCommand(
+    //   // tslint:disable:no-bitwise i am a 7331 haxx0r
+    //   monaco.KeyMod.Alt | monaco.KeyCode.Space,
+    //   () => {
+    //     if (monacoEditor) {
+    //       monacoEditor.trigger("", "editor.action.triggerSuggest", null);
+    //     }
+    //   },
+    //   ""
+    // );
+
+    editor.addCommand(
+      // tslint:disable:no-bitwise i am a 7331 haxx0r
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_E,
+      copyComponentToClipboard,
+      ""
+    );
+  };
 
   const [onChange] = useDebouncedCallback(
     (value: string) => {
@@ -77,12 +135,9 @@ export function ReactScriptEditor({ ...props }) {
     []
   );
 
-  const files = sandboxFiles;
-  console.log(files);
-
   return (
     <MonacoEditor
-      value={files[openedPath] ? files[openedPath].text : ""}
+      value={sandboxFiles[openedPath] ? sandboxFiles[openedPath].text : ""}
       onChange={onChange}
       height="100%"
       fileName="component.tsx"
@@ -91,9 +146,7 @@ export function ReactScriptEditor({ ...props }) {
       theme="vs-dark"
       language="reactscript"
       editorWillMount={editorWillMount}
-      editorDidMount={editor => {
-        setEditor(editor);
-      }}
+      editorDidMount={editorDidMount}
     />
   );
 }

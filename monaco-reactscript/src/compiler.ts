@@ -89,13 +89,18 @@ export const compile = (program: ts.Program, fileName: string) => {
   const checker = program.getTypeChecker();
 
   const declarations = {};
-  const unidentified = [];
+  const unidentified = {};
   function visit(node) {
     if (ts.isIdentifier(node)) {
       const symbol = checker.getSymbolAtLocation(node);
       // ids.push(node);
-      if (!symbol && !declarations[node.text]) {
-        unidentified.push(node.text);
+      if (
+        !symbol &&
+        !declarations[node.text] &&
+        !ts.isPropertyAccessExpression(node.parent) &&
+        node.text.length > 0
+      ) {
+        unidentified[node.text] = "";
       }
     }
 
@@ -110,6 +115,7 @@ export const compile = (program: ts.Program, fileName: string) => {
 
   ts.forEachChild(sourceFile, visit);
   console.log(unidentified);
+  console.log(sourceFile);
   // console.log(declarations);
 
   const declaration = ts.createFunctionDeclaration(
@@ -136,7 +142,7 @@ export const compile = (program: ts.Program, fileName: string) => {
     ts.createImportClause(
       undefined,
       ts.createNamedImports(
-        unidentified.map(i =>
+        Object.keys(unidentified).map(i =>
           ts.createImportSpecifier(undefined, ts.createIdentifier(i))
         )
       )
@@ -150,7 +156,7 @@ export const compile = (program: ts.Program, fileName: string) => {
 
   const code = [
     importReact,
-    ...(unidentified.length > 0 ? [importLib] : []),
+    ...(Object.keys(unidentified).length > 0 ? [importLib] : []),
     ...globalStmts,
     declaration
   ]

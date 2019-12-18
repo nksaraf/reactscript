@@ -35,13 +35,16 @@
       "codesandbox-utils",
       "comlink",
       "ky/index.js",
-      "fast-deep-equal/es6/index.js"
+      "fast-deep-equal/es6/index.js",
+      "idb-keyval",
+      "clipboard-copy/index.js"
     ]
   },
   "dependencies": {
     "acorn": "^7.1.0",
     "acorn-jsx": "^5.1.0",
     "acorn-walk": "^7.0.0",
+    "clipboard-copy": "^3.1.0",
     "codesandbox-api": "^0.0.23",
     "codesandbox-import-utils": "^2.1.11",
     "codesandbox-utils": "file:./codesandbox-utils/pkg",
@@ -49,6 +52,7 @@
     "estree-walker": "^1.0.0",
     "fast-deep-equal": "^3.1.1",
     "goober": "nksaraf/goober#theme",
+    "idb-keyval": "^3.2.0",
     "ky": "*",
     "lodash.isequal": "^4.5.0",
     "preact": "10.1.0",
@@ -56,7 +60,8 @@
     "react": "npm:@reactesm/react",
     "react-dom": "npm:@reactesm/react-dom",
     "smooshpack": "*",
-    "styled-system": "*"
+    "styled-system": "*",
+    "use-clipboard-copy": "^0.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
