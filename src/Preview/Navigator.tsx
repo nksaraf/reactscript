@@ -4,7 +4,7 @@ import { listen, dispatch } from "codesandbox-api";
 
 import { RefreshIcon, BackwardIcon, ForwardIcon } from "./icons";
 import { ISandpackContext } from "../types";
-import { useSandpack } from "../Sandpack/SandpackProvider";
+import { useSandpack } from "../core/SandpackProvider";
 import { useEffect, useState } from "preact/hooks";
 // import withSandpack from "../../../utils/with-sandpack";
 // import { ISandpackContext } from "../../types";

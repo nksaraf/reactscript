@@ -1,10 +1,10 @@
 import { registerFrame } from "codesandbox-api";
-import { useBundler } from "./bundler";
+import { useBundler } from "./useBundler";
 import { useRef } from "preact/hooks";
 import { h } from "preact";
-import { useCodesandbox } from "./sandpack";
+import { useCodesandbox } from "./useCodesandbox";
 
-export const SandpackFrame = ({ ...props }) => {
+export const SandpackIFrame = ({ ...props }) => {
   const { bundlerURL } = useBundler();
   const iframe = useRef();
 

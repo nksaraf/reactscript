@@ -34,9 +34,8 @@
       "codesandbox-api",
       "codesandbox-utils",
       "comlink",
-      "acorn",
-      "acorn-walk",
-      "estree-walker"
+      "ky/index.js",
+      "fast-deep-equal/es6/index.js"
     ]
   },
   "dependencies": {
@@ -48,7 +47,9 @@
     "codesandbox-utils": "file:./codesandbox-utils/pkg",
     "comlink": "^4.2.0",
     "estree-walker": "^1.0.0",
+    "fast-deep-equal": "^3.1.1",
     "goober": "nksaraf/goober#theme",
+    "ky": "*",
     "lodash.isequal": "^4.5.0",
     "preact": "10.1.0",
     "preact-compat": "^3.19.0",

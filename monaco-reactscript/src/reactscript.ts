@@ -103,6 +103,7 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
     //     }
 
     //     this.fs = BrowserFS.BFSRequire("fs");
+    //     window.BrowserFS = BrowserFS;
 
     //     this.syncDirectory("/sandbox");
 
@@ -119,7 +120,7 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
   }
 
   getReactScript(filename: string) {
-    return compile(this.getSourceFile(filename));
+    return compile(this._languageService.getProgram(), filename);
 
     // console.log(model);
     // console.log(this);
@@ -331,6 +332,8 @@ export class ReactScriptWorker implements ts.LanguageServiceHost {
   getScriptKind?(fileName: string): ts.ScriptKind {
     const suffix = fileName.substr(fileName.lastIndexOf(".") + 1);
     switch (suffix) {
+      case "react":
+        return ts.ScriptKind.TSX;
       case "ts":
         return ts.ScriptKind.TS;
       case "tsx":

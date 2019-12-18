@@ -12,6 +12,10 @@
       data-name="vs/editor/editor.main"
       href="../node_modules/monaco-editor-core/min/vs/editor/editor.main.css"
     />
+    <script
+      src="http://localhost:8000/static/browserfs7/browserfs.min.js"
+      type="text/javascript"
+    ></script>
   </head>
   <body>
     <!-- <iframe
@@ -22,7 +26,8 @@
     ></iframe> -->
     <div id="app"></div>
     <script>
-      var process = { env: {} };
+      (window.process = BrowserFS.BFSRequire("process")),
+        (window.Buffer = BrowserFS.BFSRequire("buffer").Buffer);
     </script>
     <script type="module" src="./index.js"></script>
   </body>

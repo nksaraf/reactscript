@@ -36,6 +36,6 @@
     "src/Box/Box.jsx",
     "src/MonacoEditor/Editor.jsx",
     "src/MonacoEditor/useMonacoEditor.js",
-    "CodeEnv"
+    "CodeEnv", "src/core/reactscript.ts", "src/core/ReactScriptEditor.tsx", "src/core/createHookContext.tsx"
   ]
 }

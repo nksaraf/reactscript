@@ -1,5 +1,5 @@
 export interface IFile {
-  code: string;
+  text: string;
 }
 
 export interface IFiles {

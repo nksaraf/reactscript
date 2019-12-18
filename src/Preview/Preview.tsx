@@ -1,10 +1,7 @@
 import { h } from "preact";
 import { ISandpackContext } from "../types";
-import { useRef, useEffect } from "preact/hooks";
-// import { useSandpack, Bundler } from "../Sandpack/SandpackProvider";
 import { memo } from "preact/compat";
-import { useBundler } from "../Sandpack/bundler";
-import { SandpackFrame } from "../Sandpack/frame";
+import { SandpackIFrame } from "../core/SandpackIFrame";
 
 export interface PreviewProps {
   sandpack: ISandpackContext;
@@ -24,7 +21,7 @@ export const Preview = memo(() => {
 
   return (
     <div ref={ref}>
-      <SandpackFrame />
+      <SandpackIFrame />
     </div>
   );
 });

@@ -1,5 +1,4 @@
 import * as ts from "./lib/typescriptServices";
-console.log(ts);
 import { formatCode } from "./prettify";
 
 const getJsxElementsFromBinaryExpression = (
@@ -64,7 +63,6 @@ const splitJsx = (sourceFile: ts.SourceFile) => {
 
 const getParts = (sourceFile: ts.SourceFile) => {
   const { jsxElements, body } = splitJsx(sourceFile);
-  console.log(jsxElements, body);
   let globalStmts = [];
   let funcStmts = [];
 
@@ -80,25 +78,39 @@ const getParts = (sourceFile: ts.SourceFile) => {
   return { jsxElements, globalStmts, funcStmts };
 };
 
-export const iden = (program: ts.Program, fileName) => {};
+// export const iden = (program: ts.Program, fileName) => {
+//   program.
+// };
 
 export const compile = (program: ts.Program, fileName: string) => {
   const sourceFile = program.getSourceFile(fileName);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   const { jsxElements, globalStmts, funcStmts } = getParts(sourceFile);
+  const checker = program.getTypeChecker();
 
-  console.log(jsxElements, globalStmts, funcStmts);
-
-  const ids = [];
+  const declarations = {};
+  const unidentified = [];
   function visit(node) {
     if (ts.isIdentifier(node)) {
-      ids.push(node);
-      console.log(node.text);
+      const symbol = checker.getSymbolAtLocation(node);
+      // ids.push(node);
+      if (!symbol && !declarations[node.text]) {
+        unidentified.push(node.text);
+      }
     }
+
+    if (ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node)) {
+      if (ts.isIdentifier(node.name)) {
+        declarations[node.name.text] = node;
+      }
+    }
+    // if (ts.IsDecl)
     ts.forEachChild(node, visit);
   }
 
   ts.forEachChild(sourceFile, visit);
+  console.log(unidentified);
+  // console.log(declarations);
 
   const declaration = ts.createFunctionDeclaration(
     undefined,
@@ -118,13 +130,36 @@ export const compile = (program: ts.Program, fileName: string) => {
     ts.createStringLiteral("react")
   );
 
-  const code = [importReact, ...globalStmts, declaration]
+  const importLib = ts.createImportDeclaration(
+    undefined,
+    undefined,
+    ts.createImportClause(
+      undefined,
+      ts.createNamedImports(
+        unidentified.map(i =>
+          ts.createImportSpecifier(undefined, ts.createIdentifier(i))
+        )
+      )
+    ),
+    ts.createStringLiteral("./lib")
+  );
+
+  console.log(
+    printer.printNode(ts.EmitHint.Unspecified, importLib, sourceFile)
+  );
+
+  const code = [
+    importReact,
+    ...(unidentified.length > 0 ? [importLib] : []),
+    ...globalStmts,
+    declaration
+  ]
     .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
     .join("\n");
 
   const compiled = formatCode(code);
   console.log(compiled);
-  return compiled;
+  return { code: compiled, lib: unidentified };
 };
 
 export const format = (sourceFile: ts.SourceFile) => {

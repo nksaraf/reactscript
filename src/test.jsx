@@ -1,4 +1,4 @@
-import { BundlerProvider } from "Sandpack/bundler";
+import { BundlerProvider } from "core/useBundler";
 
 const App = () => {
   return (

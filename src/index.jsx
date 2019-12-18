@@ -3,12 +3,13 @@ import "preact/debug";
 import { h, render } from "preact";
 import { theme, ThemeProvider, Box } from "./Box";
 import { glob } from "goober";
-import { ReactScriptEditor, reactScript } from "./ReactScriptEditor";
+import { ReactScriptEditor } from "./core/ReactScriptEditor";
+import { reactScript } from "./core/reactScript";
 // import { SandpackProvider } from "./Sandpack/SandpackProvider";
-import { BundlerProvider } from "./Sandpack/bundler";
-import { SandpackFrame } from "./Sandpack/frame";
-import { SandboxProvider } from "./Sandpack/sandbox";
-import { createProject } from "./reactscript";
+import { BundlerProvider } from "./core/useBundler";
+import { SandpackIFrame } from "./core/SandpackIFrame";
+import { SandboxProvider } from "./core/useSandbox";
+import { createProject } from "./core/reactScript";
 
 // import { version } from "codesandbox-utils";
 // // import { FileExplorer } from "./FileExplorer/FileExplorer";
@@ -45,7 +46,7 @@ const App = () => {
           <Box display="flex" width="100vw" height="100vh">
             <ReactScriptEditor style={{ flex: 1 }} />
             <Box display="flex" flexDirection="column" flex={1}>
-              <SandpackFrame
+              <SandpackIFrame
                 style={{
                   flex: "1",
                   width: "100%",
@@ -53,7 +54,7 @@ const App = () => {
                   outline: "none"
                 }}
               />
-              <SandpackFrame
+              <SandpackIFrame
                 style={{
                   flex: "1",
                   width: "100%",
