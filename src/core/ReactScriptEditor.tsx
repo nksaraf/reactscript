@@ -95,6 +95,13 @@ export function ReactScriptEditor({ ...props }) {
       ) {
         e.preventDefault();
         copyComponentToClipboard();
+      } else if (
+        e.code === "KeyP" &&
+        (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
+        e.shiftKey
+      ) {
+        e.preventDefault();
+        editor.trigger("", "editor.action.quickCommand", null);
       }
     };
 

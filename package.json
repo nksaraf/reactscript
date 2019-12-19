@@ -39,7 +39,7 @@
       "idb-keyval",
       "clipboard-copy/index.js",
       "redux-thunk",
-      "redux-logger/dist/redux-logger.js"
+      "redux-logger"
     ]
   },
   "dependencies": {
@@ -61,7 +61,7 @@
     "preact-compat": "^3.19.0",
     "react": "npm:@reactesm/react",
     "react-dom": "npm:@reactesm/react-dom",
-    "redux-logger": "^3.0.6",
+    "redux-logger": "beta",
     "redux-thunk": "^2.3.0",
     "smooshpack": "*",
     "styled-system": "*",

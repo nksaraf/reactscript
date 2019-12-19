@@ -1,6 +1,12 @@
 import { useCallback, useRef, useState, useEffect } from "preact/hooks";
-import logger from "redux-logger/dist/redux-logger";
+import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
+
+// console.log(logger);
+
+const logger = createLogger({
+  collapsed: true
+});
 
 export function useFirstMountState(): boolean {
   const isFirst = useRef(true);

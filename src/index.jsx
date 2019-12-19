@@ -1,7 +1,7 @@
 // Must be the first import
 import "preact/debug";
 import { h, render } from "preact";
-import { theme, ThemeProvider, Box } from "./Box";
+import { theme, ThemeProvider, Box, Button } from "./Box";
 import { glob } from "goober";
 import { ReactScriptEditor } from "./core/ReactScriptEditor";
 import { reactScript } from "./core/reactScript";
@@ -32,10 +32,16 @@ const App = () => {
         <SandboxProvider
           {...createProject()}
           entry="/index.jsx"
-          sandboxTransform={reactScript}
           openedPath="/component.react"
         >
           <Box display="flex" width="100vw" height="100vh">
+            <Button
+              onClick={async e => {
+                console.log(await window.chooseFileSystemEntries());
+              }}
+            >
+              Click
+            </Button>
             <ReactScriptEditor style={{ flex: 1 }} />
             <Box display="flex" flexDirection="column" flex={1}>
               <SandpackIFrame

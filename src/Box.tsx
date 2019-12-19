@@ -148,6 +148,7 @@ export interface GridPosition {
   rowSpan?: ResponsiveValue<number>;
   colSpan?: ResponsiveValue<number>;
 }
+
 import { theme } from "./theme";
 // const composed = compose(space, layout, typography, color);
 // const BoxBase = ({ children, ...props }) => {
@@ -210,6 +211,10 @@ const composed = compose(
 
 export const Box = styled("div")(composed);
 export const IFrame = styled("iframe")(composed);
+export const Button = styled("button")(composed);
+
 Box.displayName = "Box";
+IFrame.displayName = "IFrame";
+Button.displayName = "Button";
 
 export { theme };

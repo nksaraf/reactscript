@@ -1,6 +1,19 @@
 import './preact.js';
 import { h as hooks_module } from './common/hooks.module-9795d4f0.js';
-import { c as createCommonjsModule, u as unwrapExports, a as commonjsGlobal, g as getCjsExportFromNamespace } from './common/_commonjsHelpers-7dcf7119.js';
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+function getCjsExportFromNamespace (n) {
+	return n && n['default'] || n;
+}
 
 var templates = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -7235,29 +7248,29 @@ function tokenizer(input, options) {
 }
 
 var acorn = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    Node: Node,
-    Parser: Parser,
-    Position: Position,
-    SourceLocation: SourceLocation,
-    TokContext: TokContext,
-    Token: Token,
-    TokenType: TokenType,
-    defaultOptions: defaultOptions,
-    getLineInfo: getLineInfo,
-    isIdentifierChar: isIdentifierChar,
-    isIdentifierStart: isIdentifierStart,
-    isNewLine: isNewLine,
-    keywordTypes: keywords$1,
-    lineBreak: lineBreak,
-    lineBreakG: lineBreakG,
-    nonASCIIwhitespace: nonASCIIwhitespace,
-    parse: parse,
-    parseExpressionAt: parseExpressionAt,
-    tokContexts: types$1,
-    tokTypes: types,
-    tokenizer: tokenizer,
-    version: version$1
+	__proto__: null,
+	Node: Node,
+	Parser: Parser,
+	Position: Position,
+	SourceLocation: SourceLocation,
+	TokContext: TokContext,
+	Token: Token,
+	TokenType: TokenType,
+	defaultOptions: defaultOptions,
+	getLineInfo: getLineInfo,
+	isIdentifierChar: isIdentifierChar,
+	isIdentifierStart: isIdentifierStart,
+	isNewLine: isNewLine,
+	keywordTypes: keywords$1,
+	lineBreak: lineBreak,
+	lineBreakG: lineBreakG,
+	nonASCIIwhitespace: nonASCIIwhitespace,
+	parse: parse,
+	parseExpressionAt: parseExpressionAt,
+	tokContexts: types$1,
+	tokTypes: types,
+	tokenizer: tokenizer,
+	version: version$1
 });
 
 var require$$0 = getCjsExportFromNamespace(acorn);

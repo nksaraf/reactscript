@@ -4,7 +4,6 @@ import { Store, set, get, clear as clearStore, del, clear } from "idb-keyval";
 import { useReducer } from "./useReducer";
 function downloadMiddleware(dispatch) {
   return ({ type, data }) => {
-    console.log(type, data);
     switch (type) {
       case types.DOWNLOAD_FILE:
         (async () => {

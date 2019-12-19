@@ -134,7 +134,6 @@ const [SandboxProvider, useSandbox] = createHookContext(
     const { updatePreview } = useBundler();
 
     useEffect(() => {
-      console.log("previewing");
       updateSandbox(sandboxFiles);
     }, [sandboxFiles]);
 
