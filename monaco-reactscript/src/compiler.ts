@@ -1,9 +1,22 @@
 import * as ts from "./lib/typescriptServices";
 import { formatCode } from "./prettify";
 
+const text = `
+import React from  "react";
+
+export const Code = () => {
+  return <div>Hello</div>;
+}`;
+
+const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+const print = (node, sourceFile) => {
+  return printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+};
+
 const getJsxElementsFromBinaryExpression = (
   binaryExpr: ts.BinaryExpression
-): ts.JsxElement[] => {
+): (ts.JsxElement | ts.JsxSelfClosingElement)[] => {
   if (
     !ts.isJsxElement(binaryExpr.left) &&
     !ts.isJsxSelfClosingElement(binaryExpr.left)
@@ -26,7 +39,7 @@ const getJsxElementsFromBinaryExpression = (
 
 const getJsxElementsFromExpression = (
   expression: ts.Expression
-): ts.JsxElement[] => {
+): (ts.JsxElement | ts.JsxSelfClosingElement)[] => {
   if (ts.isJsxElement(expression) || ts.isJsxSelfClosingElement(expression)) {
     return [expression];
     // console.log(
@@ -40,6 +53,8 @@ const getJsxElementsFromExpression = (
     return getJsxElementsFromBinaryExpression(expression);
   } else if (ts.isParenthesizedExpression(expression)) {
     return getJsxElementsFromExpression(expression.expression);
+  } else if (ts.isReturnStatement(expression)) {
+    return getJsxElementsFromExpression(expression.expression);
   } else {
     return [];
   }
@@ -50,8 +65,7 @@ const createJsxReturnStatement = (jsx: ts.JsxElement[]) => {
   return ts.createReturn(ts.createParen(jsxElement));
 };
 
-const splitJsx = (sourceFile: ts.SourceFile) => {
-  const { statements } = sourceFile;
+const splitJsx = (statements: ts.NodeArray<ts.Statement>) => {
   let jsxElements = [];
   const lastStmt = statements[statements.length - 1];
   if (ts.isExpressionStatement(lastStmt) || ts.isReturnStatement(lastStmt)) {
@@ -61,8 +75,8 @@ const splitJsx = (sourceFile: ts.SourceFile) => {
   return { jsxElements, body: statements.slice(0, statements.length - 1) };
 };
 
-const getParts = (sourceFile: ts.SourceFile) => {
-  const { jsxElements, body } = splitJsx(sourceFile);
+const getParts = (statements: ts.NodeArray<ts.Statement>) => {
+  const { jsxElements, body } = splitJsx(statements);
   let globalStmts = [];
   let funcStmts = [];
 
@@ -82,10 +96,65 @@ const getParts = (sourceFile: ts.SourceFile) => {
 //   program.
 // };
 
+const getFunction = (stmt: ts.Node): ts.NodeArray<ts.Statement> => {
+  if (
+    // (ts.isVariableStatement(stmt) |
+    stmt.modifiers &&
+    stmt.modifiers[0].kind === ts.SyntaxKind.ExportKeyword
+  ) {
+    if (ts.isVariableStatement(stmt)) {
+      if (stmt.declarationList.declarations.length === 1) {
+        const decl = stmt.declarationList.declarations[0];
+        if (
+          ts.isIdentifier(decl.name) &&
+          decl.name.text.charAt(0) === decl.name.text.charAt(0).toUpperCase()
+        ) {
+          if (ts.isArrowFunction(decl.initializer)) {
+            const body = decl.initializer.body;
+            if (ts.isBlock(body)) {
+              return body.statements;
+            } else {
+              return [ts.createReturn(body)];
+            }
+          } else if (ts.isFunctionExpression(decl.initializer)) {
+            return decl.initializer.body.statements;
+          }
+        }
+      }
+    } else if (ts.isFunctionDeclaration(stmt)) {
+      return stmt.body.statements;
+    }
+
+    return undefined;
+  }
+};
+
 export const compile = (program: ts.Program, fileName: string) => {
   const sourceFile = program.getSourceFile(fileName);
-  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  const { jsxElements, globalStmts, funcStmts } = getParts(sourceFile);
+
+  const { statements } = sourceFile;
+
+  // const source = ts.createSourceFile(
+  //   "test.tsx",
+  //   text,
+  //   ts.ScriptTarget.Latest,
+  //   /*setParentNodes*/ false,
+  //   ts.ScriptKind.TSX
+  // );
+
+  // const { statements } = source;
+
+  let jsx = [];
+  statements.forEach(stmt => {
+    const func = getFunction(stmt);
+    if (func) {
+      console.log(formatCode(writeScript(func, sourceFile)));
+    }
+    // if (ts.isImportDeclaration(stmt)) {
+    // }
+  });
+
+  const { jsxElements, globalStmts, funcStmts } = getParts(statements);
   const checker = program.getTypeChecker();
 
   const declarations = {};
@@ -114,8 +183,6 @@ export const compile = (program: ts.Program, fileName: string) => {
   }
 
   ts.forEachChild(sourceFile, visit);
-  console.log(unidentified);
-  console.log(sourceFile);
   // console.log(declarations);
 
   const declaration = ts.createFunctionDeclaration(
@@ -150,10 +217,6 @@ export const compile = (program: ts.Program, fileName: string) => {
     ts.createStringLiteral("./lib")
   );
 
-  console.log(
-    printer.printNode(ts.EmitHint.Unspecified, importLib, sourceFile)
-  );
-
   const code = [
     importReact,
     ...(Object.keys(unidentified).length > 0 ? [importLib] : []),
@@ -168,23 +231,24 @@ export const compile = (program: ts.Program, fileName: string) => {
   return { code: compiled, lib: unidentified };
 };
 
-export const format = (sourceFile: ts.SourceFile) => {
-  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  const { jsxElements, body } = splitJsx(sourceFile);
+export const writeScript = (statements: any, sourceFile: any) => {
+  const { jsxElements, body } = splitJsx(statements);
   const jsxElement =
     jsxElements.length > 1 ? createReactFragment(jsxElements) : jsxElements[0];
+  const code = body.map(stmt => print(stmt, sourceFile)).join("\n");
+  const fullCode = code + "\n\n" + print(jsxElement, sourceFile);
+  return fullCode;
+};
 
-  const code = body
-    .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
-    .join("\n");
+export const format = (sourceFile: ts.SourceFile) => {
+  const { statements } = sourceFile;
 
-  const fullCode =
-    code +
-    "\n\n" +
-    printer.printNode(ts.EmitHint.Unspecified, jsxElement, sourceFile);
-
-  const formatted = formatCode(fullCode);
-  return formatted.slice(0, formatted.length - 2);
+  try {
+    const formatted = formatCode(writeScript(statements, sourceFile));
+    return formatted.slice(0, formatted.length - 2);
+  } catch (e) {
+    return formatCode(sourceFile.getFullText());
+  }
 };
 
 function createReactFragment(jsx: ts.JsxElement[]) {

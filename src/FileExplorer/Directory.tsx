@@ -5,7 +5,7 @@ import { ModuleList } from "../ModuleList";
 
 import { IFiles } from "../types";
 import { useState } from "preact/hooks";
-import { Box } from "../Box";
+import { Box } from "preact-box";
 
 export interface Props {
   x;

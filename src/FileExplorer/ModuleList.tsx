@@ -1,7 +1,7 @@
 import { IFiles, IFile } from "../types";
 
 import { File } from "./File";
-import { Box } from "../Box";
+import { Box } from "preact-box";
 import { h } from "preact";
 
 export interface Props {

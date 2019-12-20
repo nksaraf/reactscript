@@ -1,6 +1,6 @@
 // import { useSandpack } from "../core/SandpackProvider";
 import { h } from "preact";
-import { Box } from "../Box";
+import { Box } from "preact-box";
 
 import { ModuleList } from "./ModuleList";
 

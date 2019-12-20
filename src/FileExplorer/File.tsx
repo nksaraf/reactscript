@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { Box } from "../Box";
+import { Box } from "preact-box";
 
 export interface Props {
   path: string;

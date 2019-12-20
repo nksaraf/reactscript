@@ -1,10 +1,9 @@
 // Must be the first import
 import "preact/debug";
 import { h, render } from "preact";
-import { theme, ThemeProvider, Box, Button } from "./Box";
+import { Box, Button } from "preact-box";
 import { glob } from "goober";
 import { ReactScriptEditor } from "./core/ReactScriptEditor";
-import { reactScript } from "./core/reactScript";
 import { BundlerProvider } from "./core/useBundler";
 import { SandpackIFrame } from "./core/SandpackIFrame";
 import { SandboxProvider } from "./core/useSandbox";
@@ -27,44 +26,42 @@ glob`
 const App = () => {
   // const reactScript = useReactScript();
   return (
-    <ThemeProvider value={theme}>
-      <BundlerProvider bundlerURL={`http://localhost:8000`}>
-        <SandboxProvider
-          {...createProject()}
-          entry="/index.jsx"
-          openedPath="/component.react"
-        >
-          <Box display="flex" width="100vw" height="100vh">
-            <Button
-              onClick={async e => {
-                console.log(await window.chooseFileSystemEntries());
+    <BundlerProvider bundlerURL={`http://localhost:8000`}>
+      <SandboxProvider
+        {...createProject()}
+        entry="/index.jsx"
+        openedPath="/component.react"
+      >
+        <Box display="flex" width="100vw" height="100vh">
+          <Button
+            onClick={async e => {
+              console.log(await window.chooseFileSystemEntries());
+            }}
+          >
+            Click
+          </Button>
+          <ReactScriptEditor style={{ flex: 1 }} />
+          <Box display="flex" flexDirection="column" flex={1}>
+            <SandpackIFrame
+              style={{
+                flex: "1",
+                width: "100%",
+                border: "none",
+                outline: "none"
               }}
-            >
-              Click
-            </Button>
-            <ReactScriptEditor style={{ flex: 1 }} />
-            <Box display="flex" flexDirection="column" flex={1}>
-              <SandpackIFrame
-                style={{
-                  flex: "1",
-                  width: "100%",
-                  border: "none",
-                  outline: "none"
-                }}
-              />
-              <SandpackIFrame
-                style={{
-                  flex: "1",
-                  width: "100%",
-                  border: "none",
-                  outline: "none"
-                }}
-              />
-            </Box>
+            />
+            <SandpackIFrame
+              style={{
+                flex: "1",
+                width: "100%",
+                border: "none",
+                outline: "none"
+              }}
+            />
           </Box>
-        </SandboxProvider>
-      </BundlerProvider>
-    </ThemeProvider>
+        </Box>
+      </SandboxProvider>
+    </BundlerProvider>
   );
 };
 
