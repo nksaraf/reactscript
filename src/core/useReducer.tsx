@@ -42,11 +42,8 @@ type Middleware<Action, State> = (
 ) => (next: Dispatch<Action>) => (action: Action) => void;
 
 function composeMiddleware<Action, State>(chain: Middleware<Action, State>[]) {
-  return (context: Store<Action, State>, dispatch: Dispatch<Action>) => {
-    return chain.reduceRight((res, middleware) => {
-      return middleware(context)(res);
-    }, dispatch);
-  };
+  return (context: Store<Action, State>, dispatch: Dispatch<Action>) =>
+    chain.reduceRight((res, middleware) => middleware(context)(res), dispatch);
 }
 
 export const createReducer = <Action, State>(

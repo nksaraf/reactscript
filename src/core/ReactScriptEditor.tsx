@@ -7,6 +7,7 @@ import ReactTypes from "../@types/react";
 import { useDebouncedCallback } from "codesandbox-utils";
 import { useSandbox } from "./useSandbox";
 import { useClipboard } from "./useClipboard";
+import { useMonacoLoader } from "MonacoEditor/useMonacoLoader";
 
 const monacoOptions = {
   automaticLayout: true,
@@ -43,6 +44,9 @@ const editorWillMount = monaco => {
     noSyntaxValidation: true
   });
 
+  // monaco.languages.reactscript.javascriptDefaults.setEagerModelSync(true);
+  monaco.languages.reactscript.typescriptDefaults.setEagerModelSync(true);
+
   monaco.languages.reactscript.typescriptDefaults.addExtraLib(
     ReactTypes,
     "file:///react.d.ts"
@@ -53,6 +57,8 @@ const editorWillMount = monaco => {
 export function ReactScriptEditor({ ...props }) {
   const clipboard = useClipboard();
   const [editor, setEditor] = useState(null);
+  const [models, setModels] = useState(null);
+  const monaco = useMonacoLoader();
 
   const {
     sandboxFiles,
@@ -75,6 +81,25 @@ export function ReactScriptEditor({ ...props }) {
       }
     });
   }, []);
+
+  // useEffect(() => {
+  //   const models = {};
+  //   if (monaco) {
+  //     Object.keys(sandboxFiles).forEach(path => {
+  //       if (models[path] === undefined) {
+  //         models[path] = monaco.editor.createModel(
+  //           sandboxFiles[path].text,
+  //           "reactscript",
+  //           new monaco.Uri.file(path.substr(1, path.length - 1))
+  //         );
+  //       }
+  //     });
+  //     console.log(models);
+  //   }
+  //   setModels(models);
+  // }, [monaco, sandboxFiles]);
+
+  // console.log(models);
 
   const editorDidMount = (editor, monaco) => {
     setEditor(editor);

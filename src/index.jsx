@@ -8,6 +8,7 @@ import { BundlerProvider } from "./core/useBundler";
 import { SandpackIFrame } from "./core/SandpackIFrame";
 import { SandboxProvider } from "./core/useSandbox";
 import { createProject } from "./core/reactScript";
+import { FileExplorer } from "./FileExplorer/FileExplorer";
 
 glob`
   html,
@@ -40,6 +41,7 @@ const App = () => {
           >
             Click
           </Button>
+          <FileExplorer />
           <ReactScriptEditor style={{ flex: 1 }} />
           <Box display="flex" flexDirection="column" flex={1}>
             <SandpackIFrame

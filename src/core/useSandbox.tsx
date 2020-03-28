@@ -149,12 +149,15 @@ const [SandboxProvider, useSandbox] = createHookContext(
       }
     });
 
+    const openFile = (path: string) => setOpenedPath(path);
+
     window.dispatch = dispatch;
 
     return {
       // sandbox,
       downloadFile,
       sandboxFiles,
+      openFile,
       // readFiles,
       openedPath,
       writeFiles,

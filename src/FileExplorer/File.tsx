@@ -22,9 +22,5 @@ export const File = ({ path, active, selectFile, onClick }: Props) => {
     .filter(Boolean)
     .pop();
 
-  // const className = classNames(cn("File", "container"), {
-  //   [cn("File", "active")]: active
-  // });
-
   return <Box onClick={handleClick}>{fileName}</Box>;
 };

@@ -1,13 +1,6 @@
 import * as ts from "./lib/typescriptServices";
 import { formatCode } from "./prettify";
 
-const text = `
-import React from  "react";
-
-export const Code = () => {
-  return <div>Hello</div>;
-}`;
-
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
 const print = (node, sourceFile) => {
